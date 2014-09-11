@@ -1,0 +1,2 @@
+class StatusOutputError < RuntimeError
+end

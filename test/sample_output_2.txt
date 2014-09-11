@@ -1,0 +1,64 @@
+Version : 4.0.46
+Date    : 2014-09-10 21:24:22 -0400
+Instance: 28669
+----------- General information -----------
+Max pool size : 40
+Processes     : 22
+Requests in top-level queue : 0
+
+----------- Application groups -----------
+/home/application_1/Site#default:
+  App root: /home/application_1/Site
+  Requests in queue: 0
+  * PID: 10966   Sessions: 0       Processed: 10840   Uptime: 15h 39m 16s
+    CPU: 1%      Memory  : 170M    Last used: 17s ago
+  * PID: 10974   Sessions: 0       Processed: 0       Uptime: 15h 39m 16s
+    CPU: 0%      Memory  : 14M     Last used: 15h 39m
+  * PID: 10981   Sessions: 0       Processed: 0       Uptime: 15h 39m 16s
+    CPU: 0%      Memory  : 14M     Last used: 15h 39m
+  * PID: 10988   Sessions: 0       Processed: 0       Uptime: 15h 39m 16s
+    CPU: 0%      Memory  : 14M     Last used: 15h 39m
+  * PID: 10995   Sessions: 0       Processed: 0       Uptime: 15h 39m 16s
+    CPU: 0%      Memory  : 14M     Last used: 15h 39m
+  * PID: 11002   Sessions: 0       Processed: 0       Uptime: 15h 39m 16s
+    CPU: 0%      Memory  : 13M     Last used: 15h 39m
+  * PID: 11009   Sessions: 0       Processed: 0       Uptime: 15h 39m 15s
+    CPU: 0%      Memory  : 13M     Last used: 15h 39m
+  * PID: 11016   Sessions: 0       Processed: 0       Uptime: 15h 39m 15s
+    CPU: 0%      Memory  : 14M     Last used: 15h 39m
+  * PID: 11023   Sessions: 0       Processed: 2977    Uptime: 15h 39m 15s
+    CPU: 0%      Memory  : 144M    Last used: 3s ago
+  * PID: 11030   Sessions: 0       Processed: 12869   Uptime: 15h 39m 15s
+    CPU: 1%      Memory  : 205M    Last used: 0s ago
+  * PID: 11037   Sessions: 0       Processed: 8255    Uptime: 15h 39m 15s
+    CPU: 1%      Memory  : 162M    Last used: 46s ago
+  * PID: 11044   Sessions: 0       Processed: 6311    Uptime: 15h 39m 15s
+    CPU: 1%      Memory  : 177M    Last used: 21m 16s
+
+/home/application_2/Site#default:
+  App root: /home/application_2/Site
+  Requests in queue: 0
+  * PID: 1679    Sessions: 0       Processed: 1273    Uptime: 3d 17h 40m 10s
+    CPU: 0%      Memory  : 45M     Last used: 6m 4
+  * PID: 1686    Sessions: 0       Processed: 0       Uptime: 3d 17h 40m 10s
+    CPU: 0%      Memory  : 13M     Last used: 3d 1
+  * PID: 1693    Sessions: 0       Processed: 0       Uptime: 3d 17h 40m 10s
+    CPU: 0%      Memory  : 13M     Last used: 3d 1
+  * PID: 1700    Sessions: 0       Processed: 59      Uptime: 3d 17h 40m 10s
+    CPU: 0%      Memory  : 24M     Last used: 2d 2
+
+/home/application_3/Site#default:
+  App root: /home/application_3/Site
+  Requests in queue: 0
+  * PID: 8170    Sessions: 0       Processed: 13179   Uptime: 1d 12h 8m 46s
+    CPU: 1%      Memory  : 612M    Last used: 0s ag
+  * PID: 8180    Sessions: 0       Processed: 20043   Uptime: 1d 12h 8m 45s
+    CPU: 1%      Memory  : 663M    Last used: 11h 3
+  * PID: 8190    Sessions: 0       Processed: 13395   Uptime: 1d 12h 8m 45s
+    CPU: 1%      Memory  : 324M    Last used: 16h 5
+  * PID: 8200    Sessions: 0       Processed: 8310    Uptime: 1d 12h 8m 45s
+    CPU: 0%      Memory  : 414M    Last used: 43s a
+  * PID: 8207    Sessions: 0       Processed: 8589    Uptime: 1d 12h 8m 45s
+    CPU: 0%      Memory  : 415M    Last used: 2m 43
+  * PID: 8214    Sessions: 0       Processed: 15640   Uptime: 1d 12h 8m 45s
+    CPU: 1%      Memory  : 507M    Last used: 11h 3
