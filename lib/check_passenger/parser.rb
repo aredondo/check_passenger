@@ -59,24 +59,6 @@ module CheckPassenger
       end
     end
 
-    def parse_passenger_output
-      @passenger_status_output =~ /^(.*?)-+ +Application groups +-+[^\n]*\n(.*)$/m
-      raise StatusOutputError, 'Did not find "Application groups" section' unless $1
-
-      generic_data = $1
-      application_data = $2
-
-      generic_data =~ /Max pool size *: *(\d+)/
-      raise StatusOutputError, 'Could not find max pool size' unless $1
-      @max_pool_size = $1.to_i
-
-      generic_data =~ /Processes *: *(\d+)/
-      raise StatusOutputError, 'Could not find process count' unless $1
-      @process_count = $1.to_i
-
-      @application_data = parse_application_data(application_data)
-    end
-
     def parse_application_data(output)
       output.split("\n\n").map do |app_output|
         app_data = {}
@@ -93,6 +75,24 @@ module CheckPassenger
 
         app_data
       end
+    end
+
+    def parse_passenger_output
+      @passenger_status_output =~ /^(.*?)-+ +Application groups +-+[^\n]*\n(.*)$/m
+      raise StatusOutputError, 'Did not find "Application groups" section' unless $1
+
+      generic_data = $1
+      application_data = $2
+
+      generic_data =~ /Max pool size *: *(\d+)/
+      raise StatusOutputError, 'Could not find max pool size' unless $1
+      @max_pool_size = $1.to_i
+
+      generic_data =~ /Processes *: *(\d+)/
+      raise StatusOutputError, 'Could not find process count' unless $1
+      @process_count = $1.to_i
+
+      @application_data = parse_application_data(application_data)
     end
   end
 end
