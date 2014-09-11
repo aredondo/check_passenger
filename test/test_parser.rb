@@ -1,6 +1,43 @@
 require File.expand_path('test_helper', File.dirname(__FILE__))
 
 describe CheckPassenger::Parser do
+  describe 'minimum data processing' do
+    before do
+      @sample_output = <<-HEREDOC
+        ----------- General information -----------
+        Max pool size : 40
+        Processes     : 26
+        Requests in top-level queue : 0
+
+        ----------- Application groups -----------
+      HEREDOC
+    end
+
+    it 'correctly handles process life' do
+      begin
+        parser = CheckPassenger::Parser.new(@sample_output)
+      rescue Exception => e
+        assert false, 'Exception %s raised with message: %s' % [e.class.to_s, e.to_s]
+      end
+
+      last_used = '23x 4d 5h 4s'
+      assert_raises CheckPassenger::StatusOutputError do
+        parser.send(:'is_process_alive?', last_used)
+      end
+
+      last_used = '4d 5h 4s'
+
+      begin
+        life_in_seconds = parser.send(:life_to_seconds, last_used)
+      rescue Exception => e
+        assert false, 'Exception %s raised with message: %s' % [e.class.to_s, e.to_s]
+      end
+      assert_equal 363_604, life_in_seconds
+
+      refute parser.send(:'is_process_alive?', last_used)
+    end
+  end
+
   describe 'sample output 1' do
     before do
       output = File.read(File.expand_path('sample_output_1.txt', File.dirname(__FILE__)))
