@@ -36,6 +36,21 @@ describe CheckPassenger::Parser do
 
       refute parser.send(:'is_process_alive?', last_used)
     end
+
+    it 'correctly parses max pool size' do
+      parser = CheckPassenger::Parser.new(@sample_output)
+      assert_equal 40, parser.max_pool_size
+
+      sample_output = @sample_output.gsub('Max pool size : 40', 'Max pool size : b40')
+      assert_raises CheckPassenger::StatusOutputError do
+        parser = CheckPassenger::Parser.new(sample_output)
+      end
+
+      sample_output = @sample_output.gsub('Max pool size : 40', '')
+      assert_raises CheckPassenger::StatusOutputError do
+        parser = CheckPassenger::Parser.new(sample_output)
+      end
+    end
   end
 
   describe 'sample output 1' do
