@@ -43,14 +43,20 @@ module CheckPassenger
     private
 
     def is_process_alive?(last_used)
+      life_to_seconds(last_used) < LIVE_PROCESS_TTL_IN_SECONDS
+    end
+
+    def life_to_seconds(last_used)
       last_used.split(/\s+/).inject(0) do |sum, part|
-        if part =~ /^(\d+)([dhms])$/
-          raise StatusOutputError, 'Unknown time unit "%s" in "%s"' % [$2, last_used] unless UNIT_MULTIPLIERS.has_key?($2)
+        if part =~ /^(\d+)([a-z])$/
+          unless UNIT_MULTIPLIERS.has_key?($2)
+            raise StatusOutputError, 'Unknown time unit "%s" in "%s"' % [$2, last_used]
+          end
           sum + $1.to_i * UNIT_MULTIPLIERS[$2]
         else
           sum
         end
-      end < LIVE_PROCESS_TTL_IN_SECONDS
+      end
     end
 
     def parse_passenger_output
