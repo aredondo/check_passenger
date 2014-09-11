@@ -1,2 +1,0 @@
-class StatusOutputError < RuntimeError
-end
