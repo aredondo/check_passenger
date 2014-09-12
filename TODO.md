@@ -6,7 +6,6 @@
 - Automatically save the output of `passenger-status` when it cannot be
   processed.
 - Handle exceptions to show the corresponding error on the command line.
-- Test Check class.
 - Fix versions of gems.
 
 

@@ -1,0 +1,122 @@
+require File.expand_path('test_helper', File.dirname(__FILE__))
+
+describe CheckPassenger::Check do
+  describe '#passenger_status' do
+    it 'returns a PassengerStatus class' do
+      assert_equal 'CheckPassenger::PassengerStatus', CheckPassenger::Check.send(:passenger_status).name
+      assert_equal 'CheckPassenger::PassengerStatus',
+          CheckPassenger::Check.send(:passenger_status, File.dirname(__FILE__)).name
+    end
+  end
+
+  def output_data_structure_test(output_data)
+    assert_kind_of Array, output_data
+
+    output_data.each do |datum|
+      assert_kind_of Hash, datum
+      assert datum.has_key?(:text)
+      assert datum.has_key?(:counter)
+      assert datum.has_key?(:value)
+    end
+  end
+
+  describe 'sample output 1' do
+    before do
+      sample_path = File.expand_path('sample_output_1.txt', File.dirname(__FILE__))
+      data = File.read(sample_path)
+      @parsed_data = CheckPassenger::Parser.new(data)
+    end
+
+    describe '#process_count' do
+      it 'reports global process count' do
+        options = { parsed_data: @parsed_data }
+        output_status, output_data = CheckPassenger::Check.process_count(options)
+
+        assert_equal :ok, output_status
+        output_data_structure_test(output_data)
+
+        assert_equal 'process_count', output_data.first[:counter]
+        assert_equal 26, output_data.first[:value]
+      end
+
+      it 'reports global memory' do
+        options = { parsed_data: @parsed_data }
+        output_status, output_data = CheckPassenger::Check.memory(options)
+
+        assert :ok, output_status
+        output_data_structure_test(output_data)
+
+        assert_equal 'memory', output_data.first[:counter]
+        assert_equal 5_266, output_data.first[:value]
+      end
+
+      it 'reports data for all applications' do
+        options = { parsed_data: @parsed_data, include_all: true }
+        [:process_count, :memory, :live_process_count].each do |counter|
+          output_status, output_data = CheckPassenger::Check.send(counter, options)
+
+          assert_equal :ok, output_status
+          output_data_structure_test(output_data)
+
+          assert_equal 5, output_data.size
+        end
+      end
+
+      it 'reports global live process count' do
+        options = { parsed_data: @parsed_data }
+        output_status, output_data = CheckPassenger::Check.live_process_count(options)
+
+        assert :ok, output_status
+        output_data_structure_test(output_data)
+
+        assert_equal 'live_process_count', output_data.first[:counter]
+        assert_equal 9, output_data.first[:value]
+      end
+
+      it 'reports application process count' do
+        options = { parsed_data: @parsed_data, app: 'application_1' }
+        output_status, output_data = CheckPassenger::Check.process_count(options)
+
+        assert_equal :ok, output_status
+        output_data_structure_test(output_data)
+
+        assert_equal 'process_count', output_data.first[:counter]
+        assert_equal 12, output_data.first[:value]
+      end
+
+      it 'reports application memory' do
+        options = { parsed_data: @parsed_data, app: 'application_2' }
+        output_status, output_data = CheckPassenger::Check.memory(options)
+
+        assert_equal :ok, output_status
+        output_data_structure_test(output_data)
+
+        assert_equal 'memory', output_data.first[:counter]
+        assert_equal 65, output_data.first[:value]
+      end
+
+      it 'reports application live process count' do
+        options = { parsed_data: @parsed_data, app: 'application_3' }
+        output_status, output_data = CheckPassenger::Check.live_process_count(options)
+
+        assert_equal :ok, output_status
+        output_data_structure_test(output_data)
+
+        assert_equal 'live_process_count', output_data.first[:counter]
+        assert_equal 1, output_data.first[:value]
+      end
+
+      it 'sets a warn alert when value over threshold' do
+        options = { parsed_data: @parsed_data, app: 'application_4', warn: '150', crit: '300' }
+        output_status, output_data = CheckPassenger::Check.memory(options)
+        assert_equal :warn, output_status
+      end
+
+      it 'sets a crit alert when value over threshold' do
+        options = { parsed_data: @parsed_data, app: 'application_4', warn: '75', crit: '150' }
+        output_status, output_data = CheckPassenger::Check.memory(options)
+        assert_equal :crit, output_status
+      end
+    end
+  end
+end

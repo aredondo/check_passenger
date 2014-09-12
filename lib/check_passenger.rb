@@ -1,5 +1,6 @@
 %w{
   nagios_check
+  check
   parser
   passenger_status
   status_output_error
