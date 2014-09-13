@@ -2,11 +2,11 @@ module CheckPassenger
   class Parser
     UNIT_MULTIPLIERS = { 's' => 1, 'm' => 60, 'h' => 3_600, 'd' => 86_400 }
 
-    attr_reader :max_pool_size
+    attr_reader :max_pool_size, :passenger_status_output
 
     def initialize(passenger_status_output)
       @passenger_status_output = passenger_status_output
-      parse_passenger_output
+      parse_passenger_status_output
     end
 
     def application_names
@@ -92,8 +92,8 @@ module CheckPassenger
       end
     end
 
-    def parse_passenger_output
-      @passenger_status_output =~ /^(.*?)-+ +Application groups +-+[^\n]*\n(.*)$/m
+    def parse_passenger_status_output
+      passenger_status_output =~ /^(.*?)-+ +Application groups +-+[^\n]*\n(.*)$/m
       raise StatusOutputError, 'Did not find "Application groups" section' unless $1
 
       generic_data = $1
