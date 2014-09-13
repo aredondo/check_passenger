@@ -1,7 +1,6 @@
 # Release
 
 - README page.
-- Fix versions of gems.
 
 
 # Other
