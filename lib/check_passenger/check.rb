@@ -29,7 +29,7 @@ module CheckPassenger
         data = {
           text: '%s %s - %s' %
                 [
-                  options[:app] || 'Passenger',
+                  options[:app] ? 'Passenger ' + options[:app] : 'Passenger',
                   output_status.to_s.upcase,
                   COUNTER_LABELS[counter_name.to_sym] % counter
                 ],
