@@ -1,7 +1,5 @@
 # Release
 
-- Cache parsed data to avoid calling `passenger-status` multiple times in rapid
-  succession.
 - README page.
 - Automatically save the output of `passenger-status` when it cannot be
   processed.

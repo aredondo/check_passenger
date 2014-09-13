@@ -9,4 +9,5 @@
 
 module CheckPassenger
   LIVE_PROCESS_TTL_IN_SECONDS = 300
+  CACHE_TTL = 5
 end

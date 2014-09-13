@@ -1,3 +1,5 @@
+require 'tmpdir'
+
 module CheckPassenger
   class Check
     class << self
@@ -61,11 +63,25 @@ module CheckPassenger
       private
 
       def load_parsed_data(options)
-        if options[:parsed_data]
-          options[:parsed_data]
-        else
-          Parser.new(passenger_status(options[:passenger_status_path]).run)
+        data = options[:parsed_data]
+
+        if data.nil? and options[:cache]
+          cache_file_path = File.expand_path('check_passenger_cache.dump', Dir.tmpdir)
+
+          if File.exist?(cache_file_path) and (Time.now - File.mtime(cache_file_path) < CACHE_TTL)
+            File.open(cache_file_path, 'rb') { |file| data = Marshal.load(file.read) }
+          end
         end
+
+        if data.nil?
+          data = Parser.new(passenger_status(options[:passenger_status_path]).run)
+
+          if options[:cache]
+            File.open(cache_file_path, 'wb') { |file| file.write Marshal.dump(data) }
+          end
+        end
+
+        data
       end
 
       def passenger_status(passenger_status_path = nil)

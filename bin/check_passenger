@@ -13,6 +13,8 @@ class CheckPassengerCLI < Thor
   class_option :include_all, type: :boolean,
                 banner: 'Also include counter for all running apps'
   class_option :passenger_status_path, aliases: 'p', banner: 'Path to passenger-status command'
+  class_option :cache, type: :boolean,
+                banner: 'Cache data to avoid fast successive calls to passenger-status'
 
   desc 'memory', 'Check Passenger memory'
   option :warn, banner: 'Memory usage threshold to raise warning status', aliases: 'w'
