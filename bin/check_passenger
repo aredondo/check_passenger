@@ -1,0 +1,101 @@
+#!/usr/bin/env ruby
+
+lib = File.expand_path('../lib', File.dirname(__FILE__))
+$LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
+
+require 'thor'
+require 'check_passenger'
+require 'tmpdir'
+
+class CheckPassengerCLI < Thor
+  include CheckPassenger::NagiosCheck
+
+  class_option :app_name, aliases: 'n', banner: 'Limit check to application with APP_NAME'
+  class_option :cache, aliases: 'C', type: :boolean,
+                banner: 'Cache data to avoid fast successive calls to passenger-status'
+  class_option :debug, aliases: 'D', type: :boolean, banner: 'Debug mode'
+  class_option :dump, aliases: 'd', type: :boolean, banner: 'Dump passenger-status output on error'
+  class_option :include_all, aliases: 'a', type: :boolean,
+                banner: 'Also include counter for all running apps'
+  class_option :passenger_status_path, aliases: 'p', banner: 'Path to passenger-status command'
+
+  desc 'memory', 'Check Passenger memory'
+  option :warn, banner: 'Memory usage threshold to raise warning status', aliases: 'w'
+  option :crit, banner: 'Memory usage threshold to raise critical status', aliases: 'c'
+  def memory
+    run_check do
+      CheckPassenger::Check.memory(options)
+    end
+  end
+
+  desc 'processes', 'Check Passenger processes'
+  option :warn, aliases: 'w', banner: 'Process count threshold to raise warning status'
+  option :crit, aliases: 'c', banner: 'Process count threshold to raise critical status'
+  def processes
+    run_check do
+      CheckPassenger::Check.process_count(options)
+    end
+  end
+
+  desc 'live_processes', 'Check Passenger live processes'
+  option :warn, aliases: 'w', banner: 'Live process count threshold to raise warning status'
+  option :crit, aliases: 'c', banner: 'Live process count threshold to raise critical status'
+  def live_processes
+    run_check do
+      CheckPassenger::Check.live_process_count(options)
+    end
+  end
+
+  private
+
+  def dump_passenger_status_output(exception = nil)
+    passenger_status_output = nil
+
+    if exception and exception.respond_to?(:passenger_status_output)
+      passenger_status_output = exception.passenger_status_output
+    end
+
+    if passenger_status_output.nil? and CheckPassenger::Check.parsed_data
+      passenger_status_output = CheckPassenger::Check.parsed_data.passenger_status_output
+    end
+
+    if passenger_status_output
+      filename = 'passenger_status_output_dump-%s.txt' % Time.now.strftime('%Y%m%d%H%M%S')
+      dump_path = File.expand_path(filename, Dir.tmpdir)
+      File.open(dump_path, 'wb') { |file| file.write passenger_status_output }
+      return dump_path
+    else
+      return nil
+    end
+  end
+
+  def run_check
+    if options[:include_all] and options[:app_name]
+      raise ArgumentError, 'Data for all apps can only be included when monitoring a global counter'
+    end
+
+    output_status, output_data = yield
+    nagios_output(output_status, output_data)
+
+  rescue StandardError => e
+    if options[:debug] or options[:dump]
+      if dump_path = dump_passenger_status_output(e)
+        message = e.message + ' -- passenger-status output dumped to %s' % dump_path
+        e = e.class.new(message)
+      end
+    end
+
+    if options[:debug]
+      raise e
+    else
+      case e
+      when CheckPassenger::StatusOutputError
+        nagios_error('Passenger UNKNOWN - An error occurred while parsing passenger-status output: %s' % e.message)
+      else
+        nagios_error('Passenger UNKNOWN - %s (%s)' % [e.message, e.class.to_s])
+      end
+    end
+  end
+end
+
+CheckPassengerCLI.start(ARGV)

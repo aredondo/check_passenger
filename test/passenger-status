@@ -1,0 +1,82 @@
+#!/usr/bin/env ruby
+
+puts DATA.read
+
+__END__
+Version : 4.0.46
+Date    : 2014-09-11 00:57:57 +0200
+Instance: 32028
+----------- General information -----------
+Max pool size : 40
+Processes     : 26
+Requests in top-level queue : 0
+
+----------- Application groups -----------
+/home/application_1/Site#default:
+  App root: /home/application_1/Site
+  Requests in queue: 0
+  * PID: 12396   Sessions: 0       Processed: 13322   Uptime: 19h 12m 52s
+    CPU: 0%      Memory  : 153M    Last used: 51m 29s
+  * PID: 12404   Sessions: 0       Processed: 11694   Uptime: 19h 12m 52s
+    CPU: 0%      Memory  : 152M    Last used: 27s ago
+  * PID: 12411   Sessions: 0       Processed: 2487    Uptime: 19h 12m 52s
+    CPU: 0%      Memory  : 128M    Last used: 5m 56s
+  * PID: 12418   Sessions: 0       Processed: 16516   Uptime: 19h 12m 52s
+    CPU: 1%      Memory  : 159M    Last used: 51m 29s
+  * PID: 12425   Sessions: 0       Processed: 9004    Uptime: 19h 12m 52s
+    CPU: 0%      Memory  : 150M    Last used: 5m 56s
+  * PID: 12432   Sessions: 0       Processed: 9733    Uptime: 19h 12m 52s
+    CPU: 0%      Memory  : 137M    Last used: 50m 37s
+  * PID: 12439   Sessions: 0       Processed: 15867   Uptime: 19h 12m 52s
+    CPU: 1%      Memory  : 269M    Last used: 51m 29s
+  * PID: 12450   Sessions: 0       Processed: 21723   Uptime: 19h 12m 52s
+    CPU: 1%      Memory  : 172M    Last used: 50m 37s
+  * PID: 12457   Sessions: 0       Processed: 27773   Uptime: 19h 12m 52s
+    CPU: 2%      Memory  : 183M    Last used: 1s ago
+  * PID: 12464   Sessions: 0       Processed: 25461   Uptime: 19h 12m 52s
+    CPU: 1%      Memory  : 169M    Last used: 50m 37s
+  * PID: 24260   Sessions: 0       Processed: 13129   Uptime: 7h 26m 53s
+    CPU: 2%      Memory  : 179M    Last used: 12m 0s a
+  * PID: 27767   Sessions: 0       Processed: 3383    Uptime: 1h 3m 8s
+    CPU: 5%      Memory  : 157M    Last used: 1s ago
+
+/home/application_2/Site#default:
+  App root: /home/application_2/Site
+  Requests in queue: 0
+  * PID: 26712   Sessions: 0       Processed: 184     Uptime: 21h 36m 36s
+    CPU: 0%      Memory  : 26M     Last used: 1m 11s
+  * PID: 26721   Sessions: 0       Processed: 0       Uptime: 21h 36m 35s
+    CPU: 0%      Memory  : 13M     Last used: 21h 36m
+  * PID: 26728   Sessions: 0       Processed: 0       Uptime: 21h 36m 35s
+    CPU: 0%      Memory  : 13M     Last used: 21h 36m
+  * PID: 26736   Sessions: 0       Processed: 0       Uptime: 21h 36m 35s
+    CPU: 0%      Memory  : 13M     Last used: 21h 36m
+
+/home/application_3/Site#default:
+  App root: /home/application_3/Site
+  Requests in queue: 0
+  * PID: 17507   Sessions: 0       Processed: 2141    Uptime: 21h 43m 33s
+    CPU: 0%      Memory  : 242M    Last used: 5h 51m
+  * PID: 17514   Sessions: 0       Processed: 5967    Uptime: 21h 43m 33s
+    CPU: 0%      Memory  : 703M    Last used: 29s ago
+  * PID: 17527   Sessions: 0       Processed: 6859    Uptime: 21h 43m 33s
+    CPU: 0%      Memory  : 790M    Last used: 18m 23s
+  * PID: 17534   Sessions: 0       Processed: 4646    Uptime: 21h 43m 33s
+    CPU: 0%      Memory  : 561M    Last used: 5h 51m
+  * PID: 17541   Sessions: 0       Processed: 3030    Uptime: 21h 43m 33s
+    CPU: 0%      Memory  : 401M    Last used: 12m 15s
+  * PID: 17548   Sessions: 0       Processed: 1277    Uptime: 21h 43m 33s
+    CPU: 0%      Memory  : 240M    Last used: 5h 51m
+
+/home/application_4/Site#default:
+  App root: /home/application_4/Site
+  Requests in queue: 0
+  * PID: 32383   Sessions: 0       Processed: 2182    Uptime: 2h 7m 9s
+    CPU: 0%      Memory  : 76M     Last used: 2s ago
+  * PID: 23605   Sessions: 0       Processed: 609     Uptime: 1h 7m 25s
+    CPU: 0%      Memory  : 61M     Last used: 1m 7s ago
+  * PID: 13173   Sessions: 0       Processed: 417     Uptime: 44m 7s
+    CPU: 0%      Memory  : 60M     Last used: 1m 7s ago
+  * PID: 24379   Sessions: 0       Processed: 275     Uptime: 32m 7s
+    CPU: 0%      Memory  : 59M     Last used: 0s ago
+
