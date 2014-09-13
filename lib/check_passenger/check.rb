@@ -21,9 +21,9 @@ module CheckPassenger
         output_status = nagios_status(counter, options)
 
         data = {
-          text: '%s %s - %s' %
+          text: 'Passenger %s %s - %s' %
                 [
-                  options[:app_name] ? 'Passenger ' + options[:app_name] : 'Passenger',
+                  options[:app_name] || parsed_data.passenger_version,
                   output_status.to_s.upcase,
                   COUNTER_LABELS[counter_name.to_sym] % counter
                 ],
