@@ -74,7 +74,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports application process count' do
-        options = { parsed_data: @parsed_data, app: 'application_1' }
+        options = { parsed_data: @parsed_data, app_name: 'application_1' }
         output_status, output_data = CheckPassenger::Check.process_count(options)
 
         assert_equal :ok, output_status
@@ -85,7 +85,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports application memory' do
-        options = { parsed_data: @parsed_data, app: 'application_2' }
+        options = { parsed_data: @parsed_data, app_name: 'application_2' }
         output_status, output_data = CheckPassenger::Check.memory(options)
 
         assert_equal :ok, output_status
@@ -96,7 +96,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports application live process count' do
-        options = { parsed_data: @parsed_data, app: 'application_3' }
+        options = { parsed_data: @parsed_data, app_name: 'application_3' }
         output_status, output_data = CheckPassenger::Check.live_process_count(options)
 
         assert_equal :ok, output_status
@@ -107,13 +107,13 @@ describe CheckPassenger::Check do
       end
 
       it 'sets a warn alert when value over threshold' do
-        options = { parsed_data: @parsed_data, app: 'application_4', warn: '150', crit: '300' }
+        options = { parsed_data: @parsed_data, app_name: 'application_4', warn: '150', crit: '300' }
         output_status, output_data = CheckPassenger::Check.memory(options)
         assert_equal :warn, output_status
       end
 
       it 'sets a crit alert when value over threshold' do
-        options = { parsed_data: @parsed_data, app: 'application_4', warn: '75', crit: '150' }
+        options = { parsed_data: @parsed_data, app_name: 'application_4', warn: '75', crit: '150' }
         output_status, output_data = CheckPassenger::Check.memory(options)
         assert_equal :crit, output_status
       end

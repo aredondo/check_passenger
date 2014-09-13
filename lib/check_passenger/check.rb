@@ -17,13 +17,13 @@ module CheckPassenger
         load_parsed_data(options)
         output_data = []
 
-        counter = parsed_data.send(counter_name.to_sym, options[:app])
+        counter = parsed_data.send(counter_name.to_sym, options[:app_name])
         output_status = nagios_status(counter, options)
 
         data = {
           text: '%s %s - %s' %
                 [
-                  options[:app] ? 'Passenger ' + options[:app] : 'Passenger',
+                  options[:app_name] ? 'Passenger ' + options[:app_name] : 'Passenger',
                   output_status.to_s.upcase,
                   COUNTER_LABELS[counter_name.to_sym] % counter
                 ],
@@ -36,7 +36,7 @@ module CheckPassenger
         end
         output_data << data
 
-        if !options[:app] and options[:include_all]
+        if !options[:app_name] and options[:include_all]
           parsed_data.application_names.each do |app_name|
             counter = parsed_data.send(counter_name.to_sym, app_name)
             output_data << {

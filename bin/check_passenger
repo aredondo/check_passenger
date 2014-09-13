@@ -9,8 +9,8 @@ require 'check_passenger'
 class CheckPassengerCLI < Thor
   include CheckPassenger::NagiosCheck
 
-  class_option :app, aliases: 'a', banner: 'Limit check to APP'
   class_option :include_all, type: :boolean,
+  class_option :app_name, aliases: 'n', banner: 'Limit check to application with APP_NAME'
                 banner: 'Also include counter for all running apps'
   class_option :passenger_status_path, aliases: 'p', banner: 'Path to passenger-status command'
   class_option :cache, type: :boolean,
@@ -47,7 +47,7 @@ class CheckPassengerCLI < Thor
   private
 
   def run_check
-    if options[:include_all] and options[:app]
+    if options[:include_all] and options[:app_name]
       raise ArgumentError, 'Data for all apps can only be included when monitoring a global counter'
     end
 
