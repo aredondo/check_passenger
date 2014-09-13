@@ -10,7 +10,9 @@ module CheckPassenger
     end
 
     def nagios_output(status, data)
-      raise ArgumentError, 'Invalid status' unless [:ok, :warn, :crit].include?(status)
+      unless [:ok, :warn, :crit].include?(status)
+        raise ArgumentError, 'Invalid status provided: %s' % status.to_s
+      end
 
       data = [data] unless data.is_a?(Array)
 
