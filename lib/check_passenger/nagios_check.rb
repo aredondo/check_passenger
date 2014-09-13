@@ -1,7 +1,13 @@
 module CheckPassenger
   module NagiosCheck
     EXIT_CODES = { ok: 0, warn: 1, crit: 2 }
+
     private
+
+    def nagios_error(message)
+      puts message
+      exit 3
+    end
 
     def nagios_output(status, data)
       raise ArgumentError, 'Invalid status' unless [:ok, :warn, :crit].include?(status)
