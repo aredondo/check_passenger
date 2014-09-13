@@ -2,7 +2,7 @@ module CheckPassenger
   class Parser
     UNIT_MULTIPLIERS = { 's' => 1, 'm' => 60, 'h' => 3_600, 'd' => 86_400 }
 
-    attr_reader :max_pool_size, :passenger_status_output
+    attr_reader :max_pool_size, :passenger_status_output, :passenger_version
 
     def initialize(passenger_status_output)
       @passenger_status_output = passenger_status_output
@@ -101,6 +101,10 @@ module CheckPassenger
 
       generic_data = $1
       application_data = $2
+
+      generic_data =~ /Version *: *([.\d]+)/
+      raise StatusOutputError.new('Could not find Passenger version', passenger_status_output) unless $1
+      @passenger_version = $1
 
       generic_data =~ /Max pool size *: *(\d+)/
       raise StatusOutputError.new('Could not find max pool size', passenger_status_output) unless $1

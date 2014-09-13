@@ -4,6 +4,9 @@ describe CheckPassenger::Parser do
   describe 'minimum data processing' do
     before do
       @sample_output = <<-HEREDOC
+        Version : 4.0.46
+        Date    : 2014-09-11 00:57:57 +0200
+        Instance: 32028
         ----------- General information -----------
         Max pool size : 40
         Processes     : 26
@@ -50,6 +53,12 @@ describe CheckPassenger::Parser do
       assert_raises CheckPassenger::StatusOutputError do
         parser = CheckPassenger::Parser.new(sample_output)
       end
+    end
+
+    it 'gets Passenger version' do
+      parser = CheckPassenger::Parser.new(@sample_output)
+      assert_respond_to parser, :passenger_version
+      assert_equal '4.0.46', parser.passenger_version
     end
   end
 
