@@ -15,6 +15,7 @@ class CheckPassengerCLI < Thor
   class_option :passenger_status_path, aliases: 'p', banner: 'Path to passenger-status command'
   class_option :cache, type: :boolean,
                 banner: 'Cache data to avoid fast successive calls to passenger-status'
+  class_option :debug, aliases: 'd', type: :boolean, banner: 'Debug mode'
 
   desc 'memory', 'Check Passenger memory'
   option :warn, banner: 'Memory usage threshold to raise warning status', aliases: 'w'
@@ -54,9 +55,17 @@ class CheckPassengerCLI < Thor
     nagios_output(output_status, output_data)
 
   rescue CheckPassenger::StatusOutputError => e
-    nagios_error('Passenger UNKNOWN - An error occurred while parsing passenger-status output: %s' % e.message)
+    if options[:debug]
+      raise
+    else
+      nagios_error('Passenger UNKNOWN - An error occurred while parsing passenger-status output: %s' % e.message)
+    end
   rescue StandardError => e
-    nagios_error('Passenger UNKNOWN - %s: %s' % [e.class.to_s, e.message])
+    if options[:debug]
+      raise
+    else
+      nagios_error('Passenger UNKNOWN - %s: %s' % [e.class.to_s, e.message])
+    end
   end
 end
 
