@@ -10,14 +10,14 @@ require 'tmpdir'
 class CheckPassengerCLI < Thor
   include CheckPassenger::NagiosCheck
 
-  class_option :include_all, type: :boolean,
   class_option :app_name, aliases: 'n', banner: 'Limit check to application with APP_NAME'
+  class_option :cache, aliases: 'C', type: :boolean,
+                banner: 'Cache data to avoid fast successive calls to passenger-status'
   class_option :debug, aliases: 'D', type: :boolean, banner: 'Debug mode'
   class_option :dump, aliases: 'd', type: :boolean, banner: 'Dump passenger-status output on error'
+  class_option :include_all, aliases: 'a', type: :boolean,
                 banner: 'Also include counter for all running apps'
   class_option :passenger_status_path, aliases: 'p', banner: 'Path to passenger-status command'
-  class_option :cache, type: :boolean,
-                banner: 'Cache data to avoid fast successive calls to passenger-status'
 
   desc 'memory', 'Check Passenger memory'
   option :warn, banner: 'Memory usage threshold to raise warning status', aliases: 'w'
