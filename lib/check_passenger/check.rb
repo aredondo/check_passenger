@@ -5,25 +5,19 @@ module CheckPassenger
     class << self
       include CheckPassenger::NagiosCheck
 
+      attr_reader :parsed_data
+
       COUNTER_LABELS = {
         live_process_count: '%d live processes',
         memory: '%dMB memory used',
         process_count: '%d processes'
       }
 
-      def method_missing(method, *args)
-        if COUNTER_LABELS.keys.include?(method)
-          check_counter(method, *args)
-        else
-          super
-        end
-      end
-
       def check_counter(counter_name, options = {})
-        status_data = load_parsed_data(options)
+        load_parsed_data(options)
         output_data = []
 
-        counter = status_data.send(counter_name.to_sym, options[:app])
+        counter = parsed_data.send(counter_name.to_sym, options[:app])
         output_status = nagios_status(counter, options)
 
         data = {
@@ -38,13 +32,13 @@ module CheckPassenger
           min: 0, max: nil
         }
         if [:process_count, :live_process_count].include?(counter_name.to_sym)
-          data[:max] = status_data.max_pool_size
+          data[:max] = parsed_data.max_pool_size
         end
         output_data << data
 
         if !options[:app] and options[:include_all]
-          status_data.application_names.each do |app_name|
-            counter = status_data.send(counter_name.to_sym, app_name)
+          parsed_data.application_names.each do |app_name|
+            counter = parsed_data.send(counter_name.to_sym, app_name)
             output_data << {
               text: '%s %s' % [app_name, COUNTER_LABELS[counter_name.to_sym] % counter],
               counter: counter_name.to_s, value: counter
@@ -55,6 +49,14 @@ module CheckPassenger
         return [output_status, output_data]
       end
 
+      def method_missing(method, *args)
+        if COUNTER_LABELS.keys.include?(method)
+          check_counter(method, *args)
+        else
+          super
+        end
+      end
+
       def respond_to?(method)
         return true if COUNTER_LABELS.keys.include?(method)
         super
@@ -63,25 +65,25 @@ module CheckPassenger
       private
 
       def load_parsed_data(options)
-        data = options[:parsed_data]
+        @parsed_data = options[:parsed_data]
 
-        if data.nil? and options[:cache]
+        if @parsed_data.nil? and options[:cache]
           cache_file_path = File.expand_path('check_passenger_cache.dump', Dir.tmpdir)
 
           if File.exist?(cache_file_path) and (Time.now - File.mtime(cache_file_path) < CACHE_TTL)
-            File.open(cache_file_path, 'rb') { |file| data = Marshal.load(file.read) }
+            File.open(cache_file_path, 'rb') { |file| @parsed_data = Marshal.load(file.read) }
           end
         end
 
-        if data.nil?
-          data = Parser.new(passenger_status(options[:passenger_status_path]).run)
+        if @parsed_data.nil?
+          @parsed_data = Parser.new(passenger_status(options[:passenger_status_path]).run)
 
           if options[:cache]
-            File.open(cache_file_path, 'wb') { |file| file.write Marshal.dump(data) }
+            File.open(cache_file_path, 'wb') { |file| file.write Marshal.dump(@parsed_data) }
           end
         end
 
-        data
+        @parsed_data
       end
 
       def passenger_status(passenger_status_path = nil)
