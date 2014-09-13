@@ -65,7 +65,10 @@ module CheckPassenger
       last_used.split(/\s+/).inject(0) do |sum, part|
         if part =~ /^(\d+)([a-z])$/
           unless UNIT_MULTIPLIERS.has_key?($2)
-            raise StatusOutputError, 'Unknown time unit "%s" in "%s"' % [$2, last_used]
+          raise StatusOutputError.new(
+              'Unknown time unit "%s" in "%s"' % [$2, last_used],
+              passenger_status_output
+            )
           end
           sum + $1.to_i * UNIT_MULTIPLIERS[$2]
         else
@@ -79,7 +82,7 @@ module CheckPassenger
         app_data = {}
 
         app_output =~ /App root: +([^\n]+)/
-        raise StatusOutputError, 'Could not find app name' unless $1
+        raise StatusOutputError.new('Could not find app name', passenger_status_output) unless $1
         app_data[:name] = $1.strip
 
         app_data[:process_count] = app_output.scan(/PID *: *\d+/).size
@@ -94,17 +97,17 @@ module CheckPassenger
 
     def parse_passenger_status_output
       passenger_status_output =~ /^(.*?)-+ +Application groups +-+[^\n]*\n(.*)$/m
-      raise StatusOutputError, 'Did not find "Application groups" section' unless $1
+      raise StatusOutputError.new('Did not find "Application groups" section', passenger_status_output) unless $1
 
       generic_data = $1
       application_data = $2
 
       generic_data =~ /Max pool size *: *(\d+)/
-      raise StatusOutputError, 'Could not find max pool size' unless $1
+      raise StatusOutputError.new('Could not find max pool size', passenger_status_output) unless $1
       @max_pool_size = $1.to_i
 
       generic_data =~ /Processes *: *(\d+)/
-      raise StatusOutputError, 'Could not find process count' unless $1
+      raise StatusOutputError.new('Could not find process count', passenger_status_output) unless $1
       @process_count = $1.to_i
 
       @application_data = parse_application_data(application_data)
