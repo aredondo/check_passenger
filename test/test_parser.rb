@@ -98,6 +98,12 @@ describe CheckPassenger::Parser do
         assert_equal 3, @parser.live_process_count('application_1')
         assert_equal 4, @parser.live_process_count('application_4')
       end
+
+      it 'raises exception if term matches multiple apps' do
+        assert_raises ArgumentError do
+          @parser.memory('application')
+        end
+      end
     end
   end
 

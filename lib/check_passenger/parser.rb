@@ -15,8 +15,7 @@ module CheckPassenger
 
     def live_process_count(app_name = nil)
       if app_name
-        app_data = @application_data.find { |a| a if a[:name].include?(app_name) }
-        raise ArgumentError, 'Could not find an application by "%s"' % app_name unless app_data
+        app_data = application_data(app_name)
         app_data[:live_process_count]
       else
         @application_data.inject(0) { |sum, e| sum + e[:live_process_count] }
@@ -25,8 +24,7 @@ module CheckPassenger
 
     def memory(app_name = nil)
       if app_name
-        app_data = @application_data.find { |a| a if a[:name].include?(app_name) }
-        raise ArgumentError, 'Could not find an application by "%s"' % app_name unless app_data
+        app_data = application_data(app_name)
         app_data[:memory]
       else
         @application_data.inject(0) { |sum, e| sum + e[:memory] }
@@ -35,8 +33,7 @@ module CheckPassenger
 
     def process_count(app_name = nil)
       if app_name
-        app_data = @application_data.find { |a| a if a[:name].include?(app_name) }
-        raise ArgumentError, 'Could not find an application by "%s"' % app_name unless app_data
+        app_data = application_data(app_name)
         app_data[:process_count]
       else
         @process_count
@@ -44,6 +41,21 @@ module CheckPassenger
     end
 
     private
+
+    def application_data(app_name)
+      if app_name
+        data = @application_data.select { |d| d[:name].include?(app_name) }
+        if data.size == 0
+          raise ArgumentError, 'Could not find an application by "%s"' % app_name
+        elsif data.size > 1
+          raise ArgumentError, 'More than one application match "%s"' % app_name
+        else
+          return data.first
+        end
+      else
+        return @application_data
+      end
+    end
 
     def is_process_alive?(last_used)
       life_to_seconds(last_used) < LIVE_PROCESS_TTL_IN_SECONDS
