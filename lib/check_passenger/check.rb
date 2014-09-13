@@ -31,7 +31,7 @@ module CheckPassenger
           warn: options[:warn], crit: options[:crit],
           min: 0, max: nil
         }
-        if [:process_count, :live_process_count].include?(counter_name.to_sym)
+        if !options[:app_name] and [:process_count, :live_process_count].include?(counter_name.to_sym)
           data[:max] = parsed_data.max_pool_size
         end
         output_data << data
