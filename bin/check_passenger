@@ -5,6 +5,7 @@ $LOAD_PATH.unshift(lib) if File.directory?(lib) && !$LOAD_PATH.include?(lib)
 
 require 'thor'
 require 'check_passenger'
+require 'tmpdir'
 
 class CheckPassengerCLI < Thor
   include CheckPassenger::NagiosCheck
@@ -12,6 +13,7 @@ class CheckPassengerCLI < Thor
   class_option :include_all, type: :boolean,
   class_option :app_name, aliases: 'n', banner: 'Limit check to application with APP_NAME'
   class_option :debug, aliases: 'D', type: :boolean, banner: 'Debug mode'
+  class_option :dump, aliases: 'd', type: :boolean, banner: 'Dump passenger-status output on error'
                 banner: 'Also include counter for all running apps'
   class_option :passenger_status_path, aliases: 'p', banner: 'Path to passenger-status command'
   class_option :cache, type: :boolean,
@@ -46,6 +48,27 @@ class CheckPassengerCLI < Thor
 
   private
 
+  def dump_passenger_status_output(exception = nil)
+    passenger_status_output = nil
+
+    if exception and exception.respond_to?(:passenger_status_output)
+      passenger_status_output = exception.passenger_status_output
+    end
+
+    if passenger_status_output.nil? and CheckPassenger::Check.parsed_data
+      passenger_status_output = CheckPassenger::Check.parsed_data.passenger_status_output
+    end
+
+    if passenger_status_output
+      filename = 'passenger_status_output_dump-%s.txt' % Time.now.strftime('%Y%m%d%H%M%S')
+      dump_path = File.expand_path(filename, Dir.tmpdir)
+      File.open(dump_path, 'wb') { |file| file.write passenger_status_output }
+      return dump_path
+    else
+      return nil
+    end
+  end
+
   def run_check
     if options[:include_all] and options[:app_name]
       raise ArgumentError, 'Data for all apps can only be included when monitoring a global counter'
@@ -54,17 +77,23 @@ class CheckPassengerCLI < Thor
     output_status, output_data = yield
     nagios_output(output_status, output_data)
 
-  rescue CheckPassenger::StatusOutputError => e
-    if options[:debug]
-      raise
-    else
-      nagios_error('Passenger UNKNOWN - An error occurred while parsing passenger-status output: %s' % e.message)
-    end
   rescue StandardError => e
+    if options[:debug] or options[:dump]
+      if dump_path = dump_passenger_status_output(e)
+        message = e.message + ' -- passenger-status output dumped to %s' % dump_path
+        e = e.class.new(message)
+      end
+    end
+
     if options[:debug]
-      raise
+      raise e
     else
-      nagios_error('Passenger UNKNOWN - %s: %s' % [e.class.to_s, e.message])
+      case e
+      when CheckPassenger::StatusOutputError
+        nagios_error('Passenger UNKNOWN - An error occurred while parsing passenger-status output: %s' % e.message)
+      else
+        nagios_error('Passenger UNKNOWN - %s (%s)' % [e.message, e.class.to_s])
+      end
     end
   end
 end

@@ -1,8 +1,6 @@
 # Release
 
 - README page.
-- Automatically save the output of `passenger-status` when it cannot be
-  processed.
 - Fix versions of gems.
 
 
