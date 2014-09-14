@@ -41,7 +41,7 @@ module CheckPassenger
             counter = parsed_data.send(counter_name.to_sym, app_name)
             output_data << {
               text: '%s %s' % [app_name, COUNTER_LABELS[counter_name.to_sym] % counter],
-              counter: counter_name.to_s, value: counter
+              counter: app_name, value: counter
             }
           end
         end

@@ -15,21 +15,28 @@ module CheckPassenger
       end
 
       data = [data] unless data.is_a?(Array)
+      main_status = nil
+      status_data = []
+      perf_data = []
 
       data.each do |line|
         raise ArgumentError, 'No status text provided' unless line.has_key?(:text)
 
-        if line[:counter] and line[:value]
-          puts '%s|%s=%d;%s;%s;%s;%s' % [
-            line[:text],
-            line[:counter], line[:value],
-            line[:warn], line[:crit],
-            line[:min], line[:max]
-          ]
+        if main_status.nil?
+          main_status = line[:text]
         else
-          puts line[:text]
+          status_data << line[:text]
         end
+
+        perf_data << '%s=%d;%s;%s;%s;%s' % [
+          line[:counter], line[:value],
+          line[:warn], line[:crit],
+          line[:min], line[:max]
+        ]
       end
+
+      puts '%s|%s' % [main_status, perf_data.join(' ')]
+      status_data.each { |status_datum| puts status_datum }
 
       exit EXIT_CODES[status]
     end
