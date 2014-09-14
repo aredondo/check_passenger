@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.email         = ['alvaro@redondo.name']
   spec.summary       = %q{Nagios check to monitor Passenger processes and memory}
   # spec.description   = %q{TODO: Write a longer description. Optional.}
-  spec.homepage      = ''
+  spec.homepage      = 'https://github.com/aredondo/check_passenger'
   spec.license       = 'MIT'
 
   spec.files         = `git ls-files -z`.split("\x0")
