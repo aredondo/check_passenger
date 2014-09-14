@@ -1,6 +1,25 @@
 # Release
 
 - README page.
+- Add summary to command help.
+
+
+# Fix
+
+- Handle error:
+
+```
+It appears that multiple Passenger instances are running. Please select a
+specific one by running:
+
+  passenger-status <PID>
+
+The following Passenger instances are running:
+  PID: 1394
+  PID: 1413
+```
+
+- "1 live processes" should be "1 live process"
 
 
 # Other
