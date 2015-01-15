@@ -46,6 +46,15 @@ class CheckPassengerCLI < Thor
     end
   end
 
+  desc 'deployment_error', 'Check Passenger deployment errors'
+  option :warn, :default => '0'
+  option :crit, :default => '0'
+  def deployment_error
+    run_check do
+      CheckPassenger::Check.deployment_error(options)
+    end
+  end
+
   private
 
   def dump_passenger_status_output(exception = nil)

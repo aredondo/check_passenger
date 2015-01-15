@@ -40,6 +40,15 @@ module CheckPassenger
       end
     end
 
+    def deployment_error(app_name = nil)
+      if app_name
+        app_data = application_data(app_name)
+        app_data[:deployment_error]
+      else
+        @application_data.inject(0) { |sum, e| sum + e[:deployment_error] }
+      end
+    end
+
     private
 
     def application_data(app_name)
@@ -90,7 +99,7 @@ module CheckPassenger
         app_data[:live_process_count] = (
           app_output.scan(/Last used *: *([^\n]+)/).select { |m| is_process_alive?(m[0]) }
         ).size
-
+        app_data[:deployment_error] = ( app_output.scan(/Resisting deployment error\!/).empty? ? 0 : 1 )
         app_data
       end
     end
