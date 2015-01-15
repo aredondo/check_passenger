@@ -10,7 +10,8 @@ module CheckPassenger
       COUNTER_LABELS = {
         live_process_count: '%d live processes',
         memory: '%dMB memory used',
-        process_count: '%d processes'
+        process_count: '%d processes',
+        deployment_error: '%d deployment errors',
       }
 
       def check_counter(counter_name, options = {})
