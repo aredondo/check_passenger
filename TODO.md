@@ -1,6 +1,5 @@
 # Release
 
-- README page.
 - Add summary to command help.
 - Raise CRIT alert instead of UNKNOWN when the requested application cannot be
   found.

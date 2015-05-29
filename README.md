@@ -1,29 +1,118 @@
-# CheckPassenger
+# check_passenger
 
-TODO: Write a gem description
+This gem provides a Nagios check command to monitor running Passenger processes and the memory that they use.
+
+It can report data on a global or per-application basis, and raise warnings and alerts when consumption exceeds given thresholds.
+
 
 ## Installation
 
-Add this line to your application's Gemfile:
+The easiest way to install **check\_passenger** is through RubyGems:
 
-    gem 'check_passenger'
+    # gem install check_passenger
 
-And then execute:
+Alternatively, the gem can be built from the source code with `gem build`, and manually installed in the machines where it needs to run.
 
-    $ bundle
+Either way, the `check_passenger` command should become available in the path—although it may be necessary to perform an additional action, such as running `rbenv rehash` or similar.
 
-Or install it yourself as:
-
-    $ gem install check_passenger
 
 ## Usage
 
-TODO: Write usage instructions here
+**check\_passenger** is intended to be executed in the same machine or machines where Passenger is running. It will call `passenger-status` and gather all data from its output.
+
+Typically, the Nagios service will be running in a separate machine from those being monitored. Remote execution of `check_passenger` is then usually achieved with Nagios Remote Plugin Executor (NRPE), or MK's Remote Plugin Executor (MRPE).
+
+`check_passenger` reads all necessary settings from the command-line when it's run, and does not take configuration from a file. It supports three working modes depending on the aspect being monitored, which are called with an argument as:
+
+    # check_passenger <mode>
+
+Where the `<mode>` argument can be on of the following:
+
+* `processes`: These are the Passenger processes that are currently running, associated to applications.
+* `live_processes`: Of all the running processes, how many are actually being used. See the section [Passenger Live Processes](#passenger-live-processes) below.
+* `memory`: Memory occupied by the Passenger processes that are running.
+
+In addition, **check\_passenger** can be called with the following options:
+
+* `-n, --app-name`: Limit check to application with *APP_NAME*—see the section [Global or Per-Application Reporting](#global-or-per-application-reporting) below.
+* `-C, --cache`: Cache parsed output of `passenger-status`—see the section [Data Caching](#data-caching) below.
+* `-D, --debug`: Let exception raise to the command-line, and keep the output of `passenger-status` in a file for debugging purposes.
+* `-d, --dump`: Keep the output of `passenger-status` in a file for debugging purposes.
+* `-a, --include-all`: Apart from reporting on a global counter, add data for the same counter for each running Passenger application—see the section [Global or Per-Application Reporting](#global-or-per-application-reporting) below.
+* `-p, --passenger-status-path`: Full path to the `passenger-status` command—most of the time not needed.
+
+To raise warnings and alerts, use the `-w, --warn`, and `-c, --crit` options. Ranges can be provided as described in the [Nagios Plugin Development Guidelines](https://nagios-plugins.org/doc/guidelines.html#THRESHOLDFORMAT). Note that memory is measured in megabytes.
+
+Finally, run `check_passenger help [mode]` to get usage information on the command-line.
+
+
+## Global or Per-Application Reporting
+
+For each of the aspects that **check\_passenger** can monitor (processes, live processes, and memory), it can focus on all the applications running with Passenger, or on a specific application. This is controlled with the `-n` (`--app-name`), and `-a` (`--include-all`) options, as seen in the following examples.
+
+The following command returns a counter for all the running Passenger processes in the machine:
+
+    # check_passenger processes
+    Passenger 4.0.59 OK - 46 processes|process_count=46;;;0;50
+
+The next command limits the count to the processes that belong to *APP_NAME*:
+
+    # check_passenger processes --app-name APP_NAME
+    Passenger APP_NAME OK - 20 processes|process_count=20;;;0;
+
+Where *APP_NAME* is the full path, or a unique part of it, to the root directory of the application. If, for example, each application is installed in its own user directory, this path could be something like `/home/USER/Site`, and only the username would be needed to filter the output for the application—but the full path could be provided.
+
+If multiple applications match the *APP_NAME* given, an exception is raised.
+
+Finally, it's possible to obtain a global counter, together with additional counters for each running application, as follows:
+
+    # check_passenger processes --include-all
+    Passenger 4.0.59 OK - 46 processes|process_count=46;;;0;50 /home/APP_NAME_1/Site=20;;;; /home/APP_NAME_2/Site=12;;;; /home/APP_NAME_3/Site=4;;;; /home/APP_NAME_4/Site=10;;;;
+    /home/APP_NAME_1/Site 20 processes
+    /home/APP_NAME_2/Site 12 processes
+    /home/APP_NAME_3/Site 4 processes
+    /home/APP_NAME_4/Site 10 processes
+
+This allows to monitor a resource, together with how much of it is being used by each application. Note though, that when monitoring a particular counter for all the applications in this way, it won't be possible to set alerts—just add an additional check for the alert you want to set for an application or globally.
+
+All these examples work the same with processes, live processes, and memory.
+
+
+## Passenger Live Processes
+
+Passenger reuses running processes in a sort of LIFO manner. This means that when it needs a process to handle a request, and there are running processes not currently busy handling requests, it will preferably take first the one that was run the most recently. This feature is quite handy to know how many processes a particular application, or all running applications, actually ever execute in parallel.
+
+In order to estimate the live process count, **check\_passenger** takes a look at those that have been run in the last 300 seconds (or 5 minutes). This works well as long as **check\_passenger** is executed with a periodicity of 5 minutes or less.
+
+
+## Data Caching
+
+In order to set alerts per global or application counter, **check\_passenger** must be called successive times with different settings. For example, to raise alerts on global memory consumption:
+
+    # check_passenger memory --warn 6000 --crit 8000
+    Passenger 4.0.59 OK - 4864MB memory used|memory=4864;6000;8000;0;
+
+And then again, to raise alerts on the memory consumption of a specific application:
+
+    # check_passenger memory --app-name APP_NAME --warn 3000 --crit 4000
+    Passenger APP_NAME OK - 2123MB memory used|memory=2123;3000;4000;0;
+
+For each call, **check\_passenger** must execute `passenger-status` and parse its output. While the performance penalty should not be high, this can lead to inconsistent data where, for example, the global process count is not equal to the sum of processes for all applications, as it's possible for processes to be started or terminated between calls.
+
+To avoid this inconsistency, and speed things up a bit in the way, **check\_passenger** can cache the parsed output of `passenger-status`. Just provide the `-C`, or `--cache` command-line option.
+
+Cached data is stored in the temporary directory of the system, with a time-to-live of just 5 seconds. That is, cached data will be ignored if it's more than 5 seconds old. Therefore, it's recommended that all calls to **check\_passenger** are made one after another, without inserting other checks in the middle that might take longer to complete.
+
 
 ## Contributing
 
-1. Fork it ( https://github.com/[my-github-username]/check_passenger/fork )
+1. Fork it ( https://github.com/aredondo/check_passenger/fork )
 2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
+3. Commit your changes (`git commit -am ‘Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+
+## License
+
+**check\_passenger** is released under the [MIT License](LICENSE.txt).
