@@ -98,4 +98,15 @@ class CheckPassengerCLI < Thor
   end
 end
 
+if ARGV.empty? or ARGV.first.downcase == 'help'
+  puts <<BANNER
+check_passenger #{CheckPassenger::VERSION}, Copyright 2014-#{Time.now.year} MIT License
+
+check_passenger is a Nagios check command to monitor running Passenger processes
+and the memory that they use. It can report data on a global or per-application
+basis, and raise warnings and alerts when consumption exceeds given thresholds.
+
+BANNER
+end
+
 CheckPassengerCLI.start(ARGV)
