@@ -152,5 +152,11 @@ describe CheckPassenger::Check do
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b0 live processes\b/, output_data.first[:text]
     end
+
+    it 'raises an alert if the application is not running' do
+      options = { parsed_data: @parsed_data, app_name: 'application_4' }
+      output_status, output_data = CheckPassenger::Check.process_count(options)
+      assert_equal :crit, output_status, output_data.inspect
+    end
   end
 end

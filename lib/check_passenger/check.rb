@@ -47,6 +47,10 @@ module CheckPassenger
         end
 
         return [output_status, output_data]
+
+      rescue NoApplicationError => e
+        status = :crit
+        return [status, 'Passenger %s %s - %s' % [e.name, status.to_s.upcase, e.to_s]]
       end
 
       def method_missing(method, *args)
