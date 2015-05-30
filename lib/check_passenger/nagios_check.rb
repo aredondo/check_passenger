@@ -9,33 +9,49 @@ module CheckPassenger
       exit 3
     end
 
-    def nagios_output(status, data)
-      unless [:ok, :warn, :crit].include?(status)
-        raise ArgumentError, 'Invalid status provided: %s' % status.to_s
-      end
-
+    def nagios_format_output(data)
       data = [data] unless data.is_a?(Array)
       main_status = nil
       status_data = []
       perf_data = []
 
       data.each do |line|
-        raise ArgumentError, 'No status text provided' unless line.has_key?(:text)
-
-        if main_status.nil?
-          main_status = line[:text]
+        case line
+        when String
+          status_text = line
+        when Hash
+          status_text = line[:text]
+          perf_data << '%s=%d;%s;%s;%s;%s' % [
+            line[:counter], line[:value],
+            line[:warn], line[:crit],
+            line[:min], line[:max]
+          ]
         else
-          status_data << line[:text]
+          raise ArgumentError
         end
 
-        perf_data << '%s=%d;%s;%s;%s;%s' % [
-          line[:counter], line[:value],
-          line[:warn], line[:crit],
-          line[:min], line[:max]
-        ]
+        if main_status.nil?
+          main_status = status_text
+        else
+          status_data << status_text
+        end
       end
 
-      puts '%s|%s' % [main_status, perf_data.join(' ')]
+      [main_status, status_data, perf_data]
+    end
+
+    def nagios_output(status, data)
+      unless [:ok, :warn, :crit].include?(status)
+        raise ArgumentError, 'Invalid status provided: %s' % status.to_s
+      end
+
+      main_status, status_data, perf_data = nagios_format_output(data)
+
+      if perf_data.is_a?(Array) and perf_data.any?
+        puts '%s|%s' % [main_status, perf_data.join(' ')]
+      else
+        puts main_status
+      end
       status_data.each { |status_datum| puts status_datum }
 
       exit EXIT_CODES[status]
