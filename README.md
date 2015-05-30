@@ -62,7 +62,7 @@ The next command limits the count to the processes that belong to *APP_NAME*:
 
 Where *APP_NAME* is the full path, or a unique part of it, to the root directory of the application. If, for example, each application is installed in its own user directory, this path could be something like `/home/USER/Site`, and only the username would be needed to filter the output for the application—but the full path could be provided.
 
-If multiple applications match the *APP_NAME* given, an exception is raised.
+If multiple applications match the *APP_NAME* given, **check\_passenger** reports an `UNKNOWN` status. If no application is found by the search string, it is assumed that the application failed and is not running, so **check\_passenger** raises a critical alert.
 
 Finally, it's possible to obtain a global counter, together with additional counters for each running application, as follows:
 
