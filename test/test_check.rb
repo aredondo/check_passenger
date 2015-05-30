@@ -119,4 +119,38 @@ describe CheckPassenger::Check do
       end
     end
   end
+
+  describe 'sample output 3' do
+    before do
+      sample_path = File.expand_path('sample_output_3.txt', File.dirname(__FILE__))
+      data = File.read(sample_path)
+      @parsed_data = CheckPassenger::Parser.new(data)
+    end
+
+    it 'correctly uses singular/plural when reporting counts' do
+      options = { parsed_data: @parsed_data }
+      output_status, output_data = CheckPassenger::Check.process_count(options)
+      assert output_data.first[:text] =~ /\b6 processes\b/, output_data.first[:text]
+      output_status, output_data = CheckPassenger::Check.live_process_count(options)
+      assert output_data.first[:text] =~ /\b1 live process\b/, output_data.first[:text]
+
+      options = { parsed_data: @parsed_data, app_name: 'application_1' }
+      output_status, output_data = CheckPassenger::Check.process_count(options)
+      assert output_data.first[:text] =~ /\b1 process\b/, output_data.first[:text]
+      output_status, output_data = CheckPassenger::Check.live_process_count(options)
+      assert output_data.first[:text] =~ /\b1 live process\b/, output_data.first[:text]
+
+      options = { parsed_data: @parsed_data, app_name: 'application_2' }
+      output_status, output_data = CheckPassenger::Check.process_count(options)
+      assert output_data.first[:text] =~ /\b1 process\b/, output_data.first[:text]
+      output_status, output_data = CheckPassenger::Check.live_process_count(options)
+      assert output_data.first[:text] =~ /\b0 live processes\b/, output_data.first[:text]
+
+      options = { parsed_data: @parsed_data, app_name: 'application_3' }
+      output_status, output_data = CheckPassenger::Check.process_count(options)
+      assert output_data.first[:text] =~ /\b4 processes\b/, output_data.first[:text]
+      output_status, output_data = CheckPassenger::Check.live_process_count(options)
+      assert output_data.first[:text] =~ /\b0 live processes\b/, output_data.first[:text]
+    end
+  end
 end

@@ -19,8 +19,6 @@ The following Passenger instances are running:
   PID: 1413
 ```
 
-- "1 live processes" should be "1 live process"
-
 
 # Other
 

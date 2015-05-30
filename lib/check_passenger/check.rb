@@ -8,9 +8,9 @@ module CheckPassenger
       attr_reader :parsed_data
 
       COUNTER_LABELS = {
-        live_process_count: '%d live processes',
+        live_process_count: ['%d live process', '%d live processes'],
         memory: '%dMB memory used',
-        process_count: '%d processes'
+        process_count: ['%d process', '%d processes']
       }
 
       def check_counter(counter_name, options = {})
@@ -25,7 +25,7 @@ module CheckPassenger
                 [
                   options[:app_name] || parsed_data.passenger_version,
                   output_status.to_s.upcase,
-                  COUNTER_LABELS[counter_name.to_sym] % counter
+                  counter_with_label(counter, counter_name)
                 ],
           counter: counter_name.to_s, value: counter,
           warn: options[:warn], crit: options[:crit],
@@ -40,7 +40,7 @@ module CheckPassenger
           parsed_data.application_names.each do |app_name|
             counter = parsed_data.send(counter_name.to_sym, app_name)
             output_data << {
-              text: '%s %s' % [app_name, COUNTER_LABELS[counter_name.to_sym] % counter],
+              text: '%s %s' % [app_name, counter_with_label(counter, counter_name)],
               counter: app_name, value: counter
             }
           end
@@ -63,6 +63,22 @@ module CheckPassenger
       end
 
       private
+
+      def counter_with_label(counter, counter_type)
+        counter_type = counter_type.to_sym
+
+        unless COUNTER_LABELS.keys.include?(counter_type)
+          raise ArgumentError, 'Unknown counter type: %s' % counter_type.to_s
+        end
+
+        label = if COUNTER_LABELS[counter_type].is_a?(Array)
+          counter == 1 ? COUNTER_LABELS[counter_type].first : COUNTER_LABELS[counter_type].last
+        else
+          COUNTER_LABELS[counter_type]
+        end
+
+        label % counter
+      end
 
       def load_parsed_data(options)
         @parsed_data = options[:parsed_data]
