@@ -19,7 +19,7 @@ class CheckPassengerCLI < Thor
                 banner: 'Also include counter for all running apps'
   class_option :passenger_status_path, aliases: 'p', banner: 'Path to passenger-status command'
 
-  desc 'memory', 'Check Passenger memory'
+  desc 'memory', 'Check memory used by Passenger processes'
   option :warn, banner: 'Memory usage threshold to raise warning status', aliases: 'w'
   option :crit, banner: 'Memory usage threshold to raise critical status', aliases: 'c'
   def memory
@@ -28,7 +28,7 @@ class CheckPassengerCLI < Thor
     end
   end
 
-  desc 'processes', 'Check Passenger processes'
+  desc 'processes', 'Check running Passenger processes'
   option :warn, aliases: 'w', banner: 'Process count threshold to raise warning status'
   option :crit, aliases: 'c', banner: 'Process count threshold to raise critical status'
   def processes
@@ -37,7 +37,7 @@ class CheckPassengerCLI < Thor
     end
   end
 
-  desc 'live_processes', 'Check Passenger live processes'
+  desc 'live_processes', 'Check live Passenger processes'
   option :warn, aliases: 'w', banner: 'Live process count threshold to raise warning status'
   option :crit, aliases: 'c', banner: 'Live process count threshold to raise critical status'
   def live_processes
