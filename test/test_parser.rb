@@ -109,7 +109,7 @@ describe CheckPassenger::Parser do
       end
 
       it 'raises exception if term matches multiple apps' do
-        assert_raises ArgumentError do
+        assert_raises CheckPassenger::MultipleApplicationsError do
           @parser.memory('application')
         end
       end
