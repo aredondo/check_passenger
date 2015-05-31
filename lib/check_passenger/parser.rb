@@ -46,9 +46,9 @@ module CheckPassenger
       if app_name
         data = @application_data.select { |d| d[:name].include?(app_name) }
         if data.size == 0
-          raise NoApplicationError.new('Could not find an application by "%s"' % app_name, app_name)
+          raise NoApplicationError.new('Application is not running', app_name)
         elsif data.size > 1
-          raise MultipleApplicationsError.new('More than one application match "%s"' % app_name, app_name)
+          raise MultipleApplicationsError.new('More than one running application match "%s"' % app_name, app_name)
         else
           return data.first
         end
