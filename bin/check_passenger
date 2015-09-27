@@ -46,6 +46,15 @@ class CheckPassengerCLI < Thor
     end
   end
 
+  desc 'requests', 'Check queued Passenger requests'
+  option :warn, aliases: 'w', banner: 'Request count threshold to raise warning status'
+  option :crit, aliases: 'c', banner: 'Request count threshold to raise critical status'
+  def requests
+    run_check do
+      CheckPassenger::Check.request_count(options)
+    end
+  end
+
   private
 
   def dump_passenger_status_output(exception = nil)
