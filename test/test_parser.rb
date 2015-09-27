@@ -9,7 +9,7 @@ describe CheckPassenger::Parser do
         Instance: 32028
         ----------- General information -----------
         Max pool size : 40
-        Processes     : 26
+        Processes     : 55
         Requests in top-level queue : 0
 
         ----------- Application groups -----------
@@ -86,11 +86,15 @@ describe CheckPassenger::Parser do
       end
 
       it 'reports the total count of processes' do
-        assert_equal 26, @parser.process_count
+        assert_equal 1, @parser.process_count
       end
 
       it 'reports the number of live processes' do
         assert_equal 9, @parser.live_process_count
+      end
+
+      it 'reports the number of requests queueed' do
+        assert_equal 10, @parser.request_count
       end
     end
 
@@ -106,6 +110,10 @@ describe CheckPassenger::Parser do
       it 'reports the live process count' do
         assert_equal 3, @parser.live_process_count('application_1')
         assert_equal 4, @parser.live_process_count('application_4')
+      end
+
+      it 'reports the requests queued' do
+        assert_equal 12, @parser.request_count('application_2')
       end
 
       it 'raises exception if term matches multiple apps' do
@@ -140,7 +148,7 @@ describe CheckPassenger::Parser do
       end
 
       it 'reports the total count of processes' do
-        assert_equal 22, @parser.process_count
+        assert_equal 20, @parser.process_count
     end
 
       it 'reports the number of live processes' do

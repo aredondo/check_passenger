@@ -3,25 +3,25 @@ Date    : 2015-05-30 01:53:14 +0200
 Instance: 1965
 ----------- General information -----------
 Max pool size : 50
-Processes     : 6
-Requests in top-level queue : 0
+Processes     : 30
+Requests in top-level queue : 13
 
 ----------- Application groups -----------
 /home/application_1/Site#default:
   App root: /home/application_1/Site
-  Requests in queue: 0
+  Requests in queue: 1
   * PID: 14518   Sessions: 0       Processed: 11723   Uptime: 20h 8m 7s
     CPU: 0%      Memory  : 144M    Last used: 1m 33s ag
 
 /home/application_2/Site#default:
   App root: /home/application_2/Site
-  Requests in queue: 0
+  Requests in queue: 32
   * PID: 14134   Sessions: 0       Processed: 2313    Uptime: 20h 8m 10s
     CPU: 0%      Memory  : 63M     Last used: 6h 22m 4
 
 /home/application_3/Site#default:
   App root: /home/application_3/Site
-  Requests in queue: 0
+  Requests in queue: 33
   * PID: 21058   Sessions: 0       Processed: 725     Uptime: 2d 22h 35m 38s
     CPU: 0%      Memory  : 30M     Last used: 5m 4
   * PID: 21071   Sessions: 0       Processed: 0       Uptime: 2d 22h 35m 38s

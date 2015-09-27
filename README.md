@@ -15,6 +15,8 @@ Alternatively, the gem can be built from the source code with `gem build`, and m
 
 Either way, the `check_passenger` command should become available in the path—although it may be necessary to perform an additional action, such as running `rbenv rehash` or similar.
 
+This gem requires Ruby 1.9+.
+
 
 ## Usage
 
@@ -31,6 +33,7 @@ Where the `<mode>` argument can be on of the following:
 * `processes`: These are the Passenger processes that are currently running, associated to applications.
 * `live_processes`: Of all the running processes, how many are actually being used. See the section [Passenger Live Processes](#passenger-live-processes) below.
 * `memory`: Memory occupied by the Passenger processes that are running.
+* `request_count`: These are the Passenger requests that are currently in the top level queue. See the section [Passenger Request Queues](#passenger-request-queues) below.
 
 In addition, **check\_passenger** can be called with the following options:
 
@@ -48,7 +51,7 @@ Finally, run `check_passenger help [mode]` to get usage information on the comma
 
 ## Global or Per-Application Reporting
 
-For each of the aspects that **check\_passenger** can monitor (processes, live processes, and memory), it can focus on all the applications running with Passenger, or on a specific application. This is controlled with the `-n` (`--app-name`), and `-a` (`--include-all`) options, as seen in the following examples.
+For each of the aspects that **check\_passenger** can monitor (processes, live processes, request queue, and memory), it can focus on all the applications running with Passenger, or on a specific application. This is controlled with the `-n` (`--app-name`), and `-a` (`--include-all`) options, as seen in the following examples.
 
 The following command returns a counter for all the running Passenger processes in the machine:
 
@@ -75,7 +78,7 @@ Finally, it's possible to obtain a global counter, together with additional coun
 
 This allows to monitor a resource, together with how much of it is being used by each application. Note though, that when monitoring a particular counter for all the applications in this way, it won't be possible to set alerts—just add an additional check for the alert you want to set for an application or globally.
 
-All these examples work the same with processes, live processes, and memory.
+All these examples work the same with processes, live processes, request queue, and memory.
 
 
 ## Passenger Live Processes
@@ -83,6 +86,13 @@ All these examples work the same with processes, live processes, and memory.
 Passenger reuses running processes in a sort of LIFO manner. This means that when it needs a process to handle a request, and there are running processes not currently busy handling requests, it will preferably take first the one that was run the most recently. This feature is quite handy to know how many processes a particular application, or all running applications, actually ever execute in parallel.
 
 In order to estimate the live process count, **check\_passenger** takes a look at those that have been run in the last 300 seconds (or 5 minutes). This works well as long as **check\_passenger** is executed with a periodicity of 5 minutes or less.
+
+
+## Passenger Request Queues
+
+Phusion Passenger's internal state consists of a list of Groups (representing applications), each which consist of a list of Processes (representing application processes). When spawning the first process for an application, Phusion Passenger has to create and initialize a Group data structure, run hooks, etc. Since this involves reading from disk and running processes, it can potentially take an arbitrary amount of time. During that time, said request, and any new requests targeted at that application, are put in the top-level queue until the Group is done initializing.
+
+Each Group has its own queue. As soon as the Group is initialized, relevant requests from the top-level queue are moved to the Group-local queue. This is the reason why the top-level queue is usually empty. The sum of the values of all Group-local queues, plus the value of the top-level queue, is the total number of requests that are queued. In general, if they are non-zero for a long time then that's bad.
 
 
 ## Data Caching
