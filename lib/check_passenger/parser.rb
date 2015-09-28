@@ -40,6 +40,15 @@ module CheckPassenger
       end
     end
 
+    def request_count(app_name = nil)
+      if app_name
+        app_data = application_data(app_name)
+        app_data[:request_count]
+      else
+        @application_data.inject(@request_count) { |sum, e| sum + e[:request_count] }
+      end
+    end
+
     private
 
     def application_data(app_name)
@@ -85,6 +94,10 @@ module CheckPassenger
         raise StatusOutputError.new('Could not find app name', passenger_status_output) unless $1
         app_data[:name] = $1.strip
 
+        app_output =~ /Requests in queue: *(\d+)/
+        raise StatusOutputError.new('Could not find requests queued', passenger_status_output) unless $1
+        app_data[:request_count] = $1.strip.to_i
+
         app_data[:process_count] = app_output.scan(/PID *: *\d+/).size
         app_data[:memory] = app_output.scan(/Memory *: *(\d+)M/).inject(0.0) { |s, m| s + m[0].to_f }
         app_data[:live_process_count] = (
@@ -113,6 +126,10 @@ module CheckPassenger
       generic_data =~ /Processes *: *(\d+)/
       raise StatusOutputError.new('Could not find process count', passenger_status_output) unless $1
       @process_count = $1.to_i
+
+      generic_data =~ /Requests in top-level queue *: *(\d+)/
+      raise StatusOutputError.new('Could not find request queue', passenger_status_output) unless $1
+      @request_count = $1.to_i
 
       @application_data = parse_application_data(application_data)
     end

@@ -92,6 +92,10 @@ describe CheckPassenger::Parser do
       it 'reports the number of live processes' do
         assert_equal 9, @parser.live_process_count
       end
+
+      it 'reports the number of requests queued' do
+        assert_equal 60, @parser.request_count
+      end
     end
 
     describe 'for a specific application' do
@@ -106,6 +110,10 @@ describe CheckPassenger::Parser do
       it 'reports the live process count' do
         assert_equal 3, @parser.live_process_count('application_1')
         assert_equal 4, @parser.live_process_count('application_4')
+      end
+
+      it 'reports the requests queued' do
+        assert_equal 12, @parser.request_count('application_2')
       end
 
       it 'raises exception if term matches multiple apps' do
