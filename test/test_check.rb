@@ -73,6 +73,17 @@ describe CheckPassenger::Check do
         assert_equal 9, output_data.first[:value]
       end
 
+      it 'reports global request queue' do
+        options = { parsed_data: @parsed_data }
+        output_status, output_data = CheckPassenger::Check.request_count(options)
+
+        assert :ok, output_status
+        output_data_structure_test(output_data)
+
+        assert_equal 'request_count', output_data.first[:counter]
+        assert_equal 60, output_data.first[:value]
+      end
+
       it 'reports application process count' do
         options = { parsed_data: @parsed_data, app_name: 'application_1' }
         output_status, output_data = CheckPassenger::Check.process_count(options)
@@ -106,6 +117,17 @@ describe CheckPassenger::Check do
         assert_equal 1, output_data.first[:value]
       end
 
+      it 'reports application request queue count' do
+        options = { parsed_data: @parsed_data, app_name: 'application_4' }
+        output_status, output_data = CheckPassenger::Check.request_count(options)
+
+        assert_equal :ok, output_status
+        output_data_structure_test(output_data)
+
+        assert_equal 'request_count', output_data.first[:counter]
+        assert_equal 14, output_data.first[:value]
+      end
+
       it 'sets a warn alert when value over threshold' do
         options = { parsed_data: @parsed_data, app_name: 'application_4', warn: '150', crit: '300' }
         output_status, output_data = CheckPassenger::Check.memory(options)
@@ -133,24 +155,32 @@ describe CheckPassenger::Check do
       assert output_data.first[:text] =~ /\b6 processes\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b1 live process\b/, output_data.first[:text]
+      output_status, output_data = CheckPassenger::Check.request_count(options)
+      assert output_data.first[:text] =~ /\b30 requests\b/, output_data.first[:text]
 
       options = { parsed_data: @parsed_data, app_name: 'application_1' }
       output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b1 process\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b1 live process\b/, output_data.first[:text]
+      output_status, output_data = CheckPassenger::Check.request_count(options)
+      assert output_data.first[:text] =~ /\b1 request\b/, output_data.first[:text]
 
       options = { parsed_data: @parsed_data, app_name: 'application_2' }
       output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b1 process\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b0 live processes\b/, output_data.first[:text]
+      output_status, output_data = CheckPassenger::Check.request_count(options)
+      assert output_data.first[:text] =~ /\b32 requests\b/, output_data.first[:text]
 
       options = { parsed_data: @parsed_data, app_name: 'application_3' }
       output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b4 processes\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b0 live processes\b/, output_data.first[:text]
+      output_status, output_data = CheckPassenger::Check.request_count(options)
+      assert output_data.first[:text] =~ /\b33 requests\b/, output_data.first[:text]
     end
 
     it 'raises an alert if the application is not running' do
