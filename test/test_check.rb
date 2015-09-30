@@ -84,6 +84,17 @@ describe CheckPassenger::Check do
         assert_equal 60, output_data.first[:value]
       end
 
+      it 'reports top-level queue size' do
+        options = { parsed_data: @parsed_data }
+        output_status, output_data = CheckPassenger::Check.top_level_request_count(options)
+
+        assert :ok, output_status
+        output_data_structure_test(output_data)
+
+        assert_equal 'top_level_request_count', output_data.first[:counter]
+        assert_equal 10, output_data.first[:value]
+      end
+
       it 'reports application process count' do
         options = { parsed_data: @parsed_data, app_name: 'application_1' }
         output_status, output_data = CheckPassenger::Check.process_count(options)
@@ -157,6 +168,8 @@ describe CheckPassenger::Check do
       assert output_data.first[:text] =~ /\b1 live process\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.request_count(options)
       assert output_data.first[:text] =~ /\b79 requests\b/, output_data.first[:text]
+      output_status, output_data = CheckPassenger::Check.top_level_request_count(options)
+      assert output_data.first[:text] =~ /\b13 top-level requests\b/, output_data.first[:text]
 
       options = { parsed_data: @parsed_data, app_name: 'application_1' }
       output_status, output_data = CheckPassenger::Check.process_count(options)
