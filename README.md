@@ -27,26 +27,32 @@ This gem requires Ruby 1.9+.
 
 **check\_passenger** is intended to be executed in the same machine or machines where Passenger is running. It will call `passenger-status` and gather all data from its output.
 
-Typically, the Nagios service will be running in a separate machine from those being monitored. Remote execution of `check_passenger` is then usually achieved with Nagios Remote Plugin Executor (NRPE), or MK's Remote Plugin Executor (MRPE).
+Typically, the Nagios service will be running in a separate machine from those being monitored. Remote execution of **check\_passenger** is then usually achieved with Nagios Remote Plugin Executor (NRPE), or MK's Remote Plugin Executor (MRPE).
 
-`check_passenger` reads all necessary settings from the command-line when it's run, and does not take configuration from a file. It supports three working modes depending on the aspect being monitored, which are called with an argument as:
+**check\_passenger** reads all necessary settings from the command-line when it's run, and does not take configuration from a file. It supports several working modes, one for each aspect that can be monitored, which are called with an argument as:
 
     # check_passenger <mode>
 
-Where the `<mode>` argument can be on of the following:
+Where the `<mode>` argument can be one of the following:
 
 * `processes`: These are the Passenger processes that are currently running, associated to applications.
 * `live_processes`: Of all the running processes, how many are actually being used. See the section [Passenger Live Processes](#passenger-live-processes) below.
 * `memory`: Memory occupied by the Passenger processes that are running.
-* `request_count`: These are the Passenger requests that are currently in ALL queues. See the section [Passenger Request Queues](#passenger-request-queues) below.
+* `requests`: Number of requests that are waiting in application queues. See the section [Passenger Request Queues](#passenger-request-queues) below.
+* `top_level_requests`: Number of requests waiting in the top-level queue. See the section [Passenger Request Queues](#passenger-request-queues) below.
 
-In addition, **check\_passenger** can be called with the following options:
+When checking for `processes`, `live_processes`, `memory`, or `requests`—that is, any check type except for `top_level_requests`—, the following options can be provided to filter data by application, or to get separate counters for each running application:
 
 * `-n, --app-name`: Limit check to application with *APP_NAME*—see the section [Global or Per-Application Reporting](#global-or-per-application-reporting) below.
+* `-a, --include-all`: Apart from reporting on a global counter, add data for the same counter for each running Passenger application—see the section [Global or Per-Application Reporting](#global-or-per-application-reporting) below.
+
+These two options are mutually exclusive.
+
+In addition, **check\_passenger** can be called with the following options for any check type:
+
 * `-C, --cache`: Cache parsed output of `passenger-status`—see the section [Data Caching](#data-caching) below.
 * `-D, --debug`: Let exception raise to the command-line, and keep the output of `passenger-status` in a file for debugging purposes.
 * `-d, --dump`: Keep the output of `passenger-status` in a file for debugging purposes.
-* `-a, --include-all`: Apart from reporting on a global counter, add data for the same counter for each running Passenger application—see the section [Global or Per-Application Reporting](#global-or-per-application-reporting) below.
 * `-p, --passenger-status-path`: Full path to the `passenger-status` command—most of the time not needed.
 
 To raise warnings and alerts, use the `-w, --warn`, and `-c, --crit` options. Ranges can be provided as described in the [Nagios Plugin Development Guidelines](https://nagios-plugins.org/doc/guidelines.html#THRESHOLDFORMAT). Note that memory is measured in megabytes.
@@ -56,7 +62,7 @@ Finally, run `check_passenger help [mode]` to get usage information on the comma
 
 ## Global or Per-Application Reporting
 
-For each of the aspects that **check\_passenger** can monitor (processes, live processes, request queue, and memory), it can focus on all the applications running with Passenger, or on a specific application. This is controlled with the `-n` (`--app-name`), and `-a` (`--include-all`) options, as seen in the following examples.
+For most of the aspects that **check\_passenger** can monitor (processes, live processes, application request queue size, and memory), it can focus on all the applications running with Passenger, or on a specific application. This is controlled with the `-n` (`--app-name`), and `-a` (`--include-all`) options, as seen in the following examples.
 
 The following command returns a counter for all the running Passenger processes in the machine:
 
@@ -83,7 +89,7 @@ Finally, it's possible to obtain a global counter, together with additional coun
 
 This allows to monitor a resource, together with how much of it is being used by each application. Note though, that when monitoring a particular counter for all the applications in this way, it won't be possible to set alerts—just add an additional check for the alert you want to set for an application or globally.
 
-All these examples work the same with processes, live processes, request queue, and memory.
+All these examples work the same with processes, live processes, request queue size, and memory. The exception is the check for requests waiting in the top-level queue, which is just a global counter.
 
 
 ## Passenger Live Processes
@@ -95,11 +101,19 @@ In order to estimate the live process count, **check\_passenger** takes a look a
 
 ## Passenger Request Queues
 
-Phusion Passenger's internal state consists of a list of Groups (representing applications), each which consist of a list of Processes (representing application processes). When spawning the first process for an application, Phusion Passenger has to create and initialize a Group data structure, run hooks, etc. Since this involves reading from disk and running processes, it can potentially take an arbitrary amount of time. During that time, said request, and any new requests targeted at that application, are put in the top-level queue until the Group is done initializing.
+> Phusion Passenger's internal state consists of a list of Groups (representing applications), each which consist of a list of Processes (representing application processes). When spawning the first process for an application, Phusion Passenger has to create and initialize a Group data structure, run hooks, etc. Since this involves reading from disk and running processes, it can potentially take an arbitrary amount of time. During that time, said request, and any new requests targeted at that application, are put in the top-level queue until the Group is done initializing.
 
-Each Group has its own queue. As soon as the Group is initialized, relevant requests from the top-level queue are moved to the Group-local queue. This is the reason why the top-level queue is usually empty. The sum of the values of all Group-local queues, plus the value of the top-level queue, is the total number of requests that are queued. In general, if they are non-zero and increasing, the number of workers needs to be increased.
+> Each Group has its own queue. As soon as the Group is initialized, relevant requests from the top-level queue are moved to the Group-local queue. This is the reason why the top-level queue is usually empty. The sum of the values of all Group-local queues, plus the value of the top-level queue, is the total number of requests that are queued. In general, if they are non-zero and increasing, the number of workers needs to be increased.
 
 Hongli. (2014, April 12). Re: Difference between "requests in top-level queue" and "requests in queue" in Phusion Passenger [Online forum comment]. Retrieved from http://stackoverflow.com/questions/23025028/difference-between-requests-in-top-level-queue-and-requests-in-queue-in-phus
+
+Three different queued requests counters can be monitored:
+
+* The total number of queued requests: `check_passenger requests`. This is the sum of the top-level queued requests, plus the requests queued in every application group.
+* The number of requests queued for a specific application: `check_passenger requests --app-name APP_NAME`
+* The number of requests waiting in the top-level queue: `check_passenger top_level_requests`
+
+According to the [Phusion Passenger documentation](https://www.phusionpassenger.com/library/admin/apache/overall_status_report.html#viewing-process-and-request-queue-information), the top-level request queue size is supposed to be almost always zero. If it is non-zero for an extended period of time, then there is something very wrong, possibly a Passenger bug.
 
 
 ## Data Caching
