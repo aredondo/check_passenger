@@ -156,7 +156,7 @@ describe CheckPassenger::Check do
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b1 live process\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.request_count(options)
-      assert output_data.first[:text] =~ /\b30 requests\b/, output_data.first[:text]
+      assert output_data.first[:text] =~ /\b79 requests\b/, output_data.first[:text]
 
       options = { parsed_data: @parsed_data, app_name: 'application_1' }
       output_status, output_data = CheckPassenger::Check.process_count(options)
