@@ -95,7 +95,7 @@ module CheckPassenger
         app_data[:name] = $1.strip
 
         app_output =~ /Requests in queue: *(\d+)/
-        raise StatusOutputError.new('Could not find requests queued', passenger_status_output) unless $1
+        raise StatusOutputError.new('Could not find application queued requests', passenger_status_output) unless $1
         app_data[:request_count] = $1.strip.to_i
 
         app_data[:process_count] = app_output.scan(/PID *: *\d+/).size
@@ -128,7 +128,7 @@ module CheckPassenger
       @process_count = $1.to_i
 
       generic_data =~ /Requests in top-level queue *: *(\d+)/
-      raise StatusOutputError.new('Could not find request queue', passenger_status_output) unless $1
+      raise StatusOutputError.new('Could not find top-level queued requests', passenger_status_output) unless $1
       @request_count = $1.to_i
 
       @application_data = parse_application_data(application_data)
