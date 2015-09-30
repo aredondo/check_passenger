@@ -99,6 +99,8 @@ Phusion Passenger's internal state consists of a list of Groups (representing ap
 
 Each Group has its own queue. As soon as the Group is initialized, relevant requests from the top-level queue are moved to the Group-local queue. This is the reason why the top-level queue is usually empty. The sum of the values of all Group-local queues, plus the value of the top-level queue, is the total number of requests that are queued. In general, if they are non-zero and increasing, the number of workers needs to be increased.
 
+Hongli. (2014, April 12). Re: Difference between "requests in top-level queue" and "requests in queue" in Phusion Passenger [Online forum comment]. Retrieved from http://stackoverflow.com/questions/23025028/difference-between-requests-in-top-level-queue-and-requests-in-queue-in-phus
+
 
 ## Data Caching
 
