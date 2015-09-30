@@ -49,6 +49,10 @@ module CheckPassenger
       end
     end
 
+    def top_level_request_count(_ = nil)
+      @top_level_request_count
+    end
+
     private
 
     def application_data(app_name)

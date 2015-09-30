@@ -11,7 +11,8 @@ module CheckPassenger
         live_process_count: ['%d live process', '%d live processes'],
         memory: '%dMB memory used',
         process_count: ['%d process', '%d processes'],
-        request_count: ['%d request', '%d requests']
+        request_count: ['%d request', '%d requests'],
+        top_level_request_count: ['%d top-level request', '%d top-level requests']
       }
 
       def check_counter(counter_name, options = {})
