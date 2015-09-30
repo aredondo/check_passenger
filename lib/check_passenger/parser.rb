@@ -45,7 +45,7 @@ module CheckPassenger
         app_data = application_data(app_name)
         app_data[:request_count]
       else
-        @application_data.inject(@request_count) { |sum, e| sum + e[:request_count] }
+        @application_data.inject(@top_level_request_count) { |sum, e| sum + e[:request_count] }
       end
     end
 
@@ -129,7 +129,7 @@ module CheckPassenger
 
       generic_data =~ /Requests in top-level queue *: *(\d+)/
       raise StatusOutputError.new('Could not find top-level queued requests', passenger_status_output) unless $1
-      @request_count = $1.to_i
+      @top_level_request_count = $1.to_i
 
       @application_data = parse_application_data(application_data)
     end
