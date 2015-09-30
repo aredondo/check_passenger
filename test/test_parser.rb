@@ -162,7 +162,7 @@ describe CheckPassenger::Parser do
 
       it 'reports the total count of processes' do
         assert_equal 22, @parser.process_count
-    end
+      end
 
       it 'reports the number of live processes' do
         assert_equal 7, @parser.live_process_count
