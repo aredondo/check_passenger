@@ -11,16 +11,16 @@ module CheckPassenger
 
       def passenger_status_executable_path
         command = if @path and File.exist?(@path)
-          if File.directory?(@path)
-            File.expand_path('passenger-status', @path)
-          else
-            @path
-          end
-        else
-          `which passenger-status`.strip
-        end
+                    if File.directory?(@path)
+                      File.expand_path('passenger-status', @path)
+                    else
+                      @path
+                    end
+                  else
+                    `which passenger-status`.strip
+                  end
 
-        raise Errno::ENOENT, 'Cannot find passenger-status' unless File.executable?(command)
+        fail Errno::ENOENT, 'Cannot find passenger-status' unless File.executable?(command)
 
         command
       end

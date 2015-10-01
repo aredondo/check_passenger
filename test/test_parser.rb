@@ -10,7 +10,7 @@ describe CheckPassenger::Parser do
         ----------- General information -----------
         Max pool size : 40
         Processes     : 26
-        Requests in top-level queue : 0
+        Requests in top-level queue : 2
 
         ----------- Application groups -----------
       HEREDOC
@@ -19,25 +19,25 @@ describe CheckPassenger::Parser do
     it 'correctly handles process life' do
       begin
         parser = CheckPassenger::Parser.new(@sample_output)
-      rescue Exception => e
-        assert false, 'Exception %s raised with message: %s' % [e.class.to_s, e.to_s]
+      rescue e
+        assert false, "Exception #{e.class} raised with message: #{e}"
       end
 
       last_used = '23x 4d 5h 4s'
       assert_raises CheckPassenger::StatusOutputError do
-        parser.send(:'is_process_alive?', last_used)
+        parser.send(:'process_alive?', last_used)
       end
 
       last_used = '4d 5h 4s'
 
       begin
         life_in_seconds = parser.send(:life_to_seconds, last_used)
-      rescue Exception => e
-        assert false, 'Exception %s raised with message: %s' % [e.class.to_s, e.to_s]
+      rescue e
+        assert false, "Exception #{e.class} raised with message: #{e}"
       end
       assert_equal 363_604, life_in_seconds
 
-      refute parser.send(:'is_process_alive?', last_used)
+      refute parser.send(:'process_alive?', last_used)
     end
 
     it 'correctly parses max pool size' do
@@ -53,6 +53,11 @@ describe CheckPassenger::Parser do
       assert_raises CheckPassenger::StatusOutputError do
         parser = CheckPassenger::Parser.new(sample_output)
       end
+    end
+
+    it 'correctly parses requests in top-level queue' do
+      parser = CheckPassenger::Parser.new(@sample_output)
+      assert_equal 2, parser.top_level_request_count
     end
 
     it 'gets Passenger version' do
@@ -79,6 +84,10 @@ describe CheckPassenger::Parser do
       assert_equal 40, @parser.max_pool_size
     end
 
+    it 'reports the number of requests in top-level queue' do
+      assert_equal 10, @parser.top_level_request_count
+    end
+
     describe 'for all applications' do
       it 'reports all memory used' do
         refute @parser.memory.nil?
@@ -91,6 +100,10 @@ describe CheckPassenger::Parser do
 
       it 'reports the number of live processes' do
         assert_equal 9, @parser.live_process_count
+      end
+
+      it 'reports the number of requests queued' do
+        assert_equal 60, @parser.request_count
       end
     end
 
@@ -106,6 +119,10 @@ describe CheckPassenger::Parser do
       it 'reports the live process count' do
         assert_equal 3, @parser.live_process_count('application_1')
         assert_equal 4, @parser.live_process_count('application_4')
+      end
+
+      it 'reports the requests queued' do
+        assert_equal 12, @parser.request_count('application_2')
       end
 
       it 'raises exception if term matches multiple apps' do
@@ -133,6 +150,10 @@ describe CheckPassenger::Parser do
       assert_equal 40, @parser.max_pool_size
     end
 
+    it 'reports the number of requests in top-level queue' do
+      assert_equal 12, @parser.top_level_request_count
+    end
+
     describe 'for all applications' do
       it 'reports all memory used' do
         refute @parser.memory.nil?
@@ -141,7 +162,7 @@ describe CheckPassenger::Parser do
 
       it 'reports the total count of processes' do
         assert_equal 22, @parser.process_count
-    end
+      end
 
       it 'reports the number of live processes' do
         assert_equal 7, @parser.live_process_count
@@ -160,6 +181,11 @@ describe CheckPassenger::Parser do
       it 'reports the live process count' do
         assert_equal 4, @parser.live_process_count('application_1')
         assert_equal 0, @parser.live_process_count('application_2')
+      end
+
+      it 'reports the number of requests in application queue' do
+        assert_equal 21, @parser.request_count('application_1')
+        assert_equal 22, @parser.request_count('application_2')
       end
     end
   end

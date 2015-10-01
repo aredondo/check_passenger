@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
   spec.version       = CheckPassenger::VERSION
   spec.authors       = ['Alvaro Redondo']
   spec.email         = ['alvaro@redondo.name']
-  spec.summary       = %q{Nagios check to monitor Passenger processes and memory}
+  spec.summary       = 'Nagios check to monitor Passenger processes and memory'
   # spec.description   = %q{TODO: Write a longer description. Optional.}
   spec.homepage      = 'https://github.com/aredondo/check_passenger'
   spec.license       = 'MIT'

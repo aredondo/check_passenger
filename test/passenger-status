@@ -1,15 +1,13 @@
-#!/usr/bin/env ruby
+#!/bin/bash
 
-puts DATA.read
-
-__END__
+cat <<'HEREDOC'
 Version : 4.0.46
 Date    : 2014-09-11 00:57:57 +0200
 Instance: 32028
 ----------- General information -----------
 Max pool size : 40
 Processes     : 26
-Requests in top-level queue : 0
+Requests in top-level queue : 10
 
 ----------- Application groups -----------
 /home/application_1/Site#default:
@@ -42,7 +40,7 @@ Requests in top-level queue : 0
 
 /home/application_2/Site#default:
   App root: /home/application_2/Site
-  Requests in queue: 0
+  Requests in queue: 2
   * PID: 26712   Sessions: 0       Processed: 184     Uptime: 21h 36m 36s
     CPU: 0%      Memory  : 26M     Last used: 1m 11s
   * PID: 26721   Sessions: 0       Processed: 0       Uptime: 21h 36m 35s
@@ -54,7 +52,7 @@ Requests in top-level queue : 0
 
 /home/application_3/Site#default:
   App root: /home/application_3/Site
-  Requests in queue: 0
+  Requests in queue: 3
   * PID: 17507   Sessions: 0       Processed: 2141    Uptime: 21h 43m 33s
     CPU: 0%      Memory  : 242M    Last used: 5h 51m
   * PID: 17514   Sessions: 0       Processed: 5967    Uptime: 21h 43m 33s
@@ -70,7 +68,7 @@ Requests in top-level queue : 0
 
 /home/application_4/Site#default:
   App root: /home/application_4/Site
-  Requests in queue: 0
+  Requests in queue: 4
   * PID: 32383   Sessions: 0       Processed: 2182    Uptime: 2h 7m 9s
     CPU: 0%      Memory  : 76M     Last used: 2s ago
   * PID: 23605   Sessions: 0       Processed: 609     Uptime: 1h 7m 25s
@@ -80,3 +78,4 @@ Requests in top-level queue : 0
   * PID: 24379   Sessions: 0       Processed: 275     Uptime: 32m 7s
     CPU: 0%      Memory  : 59M     Last used: 0s ago
 
+HEREDOC
