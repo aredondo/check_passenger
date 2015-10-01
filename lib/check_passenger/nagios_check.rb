@@ -24,7 +24,7 @@ module CheckPassenger
           perf_data << format('%s=%d;%s;%s;%s;%s',
                               line[:counter], line[:value], line[:warn], line[:crit], line[:min], line[:max])
         else
-          raise ArgumentError
+          fail ArgumentError
         end
 
         if main_status.nil?
@@ -39,7 +39,7 @@ module CheckPassenger
 
     def nagios_output(status, data)
       unless [:ok, :warn, :crit].include?(status)
-        raise ArgumentError, "Invalid status provided: #{status}"
+        fail ArgumentError, "Invalid status provided: #{status}"
       end
 
       main_status, status_data, perf_data = nagios_format_output(data)
@@ -67,7 +67,7 @@ module CheckPassenger
       when /^@(-?\d+):(-?\d+)$/
         lambda { |n| ($1.to_i .. $2.to_i).include?(n) }
       else
-        raise ArgumentError, "Cannot process Nagios range: #{nagios_range}"
+        fail ArgumentError, "Cannot process Nagios range: #{nagios_range}"
       end
     end
 

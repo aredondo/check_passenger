@@ -98,7 +98,7 @@ class CheckPassengerCLI < Thor
 
   def run_check
     if options[:include_all] and options[:app_name]
-      raise ArgumentError, 'Data for all apps can only be included when monitoring a global counter'
+      fail ArgumentError, 'Data for all apps can only be included when monitoring a global counter'
     end
 
     output_status, output_data = yield

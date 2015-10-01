@@ -72,7 +72,7 @@ module CheckPassenger
         counter_type = counter_type.to_sym
 
         unless COUNTER_LABELS.keys.include?(counter_type)
-          raise ArgumentError, "Unknown counter type: #{counter_type}"
+          fail ArgumentError, "Unknown counter type: #{counter_type}"
         end
 
         label = if COUNTER_LABELS[counter_type].is_a?(Array)

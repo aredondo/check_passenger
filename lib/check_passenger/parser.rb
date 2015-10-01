@@ -59,9 +59,9 @@ module CheckPassenger
       if app_name
         data = @application_data.select { |d| d[:name].include?(app_name) }
         if data.size == 0
-          raise NoApplicationError.new('Application is not running', app_name)
+          fail NoApplicationError.new('Application is not running', app_name)
         elsif data.size > 1
-          raise MultipleApplicationsError.new("More than one running application match '#{app_name}'", app_name)
+          fail MultipleApplicationsError.new("More than one running application match '#{app_name}'", app_name)
         else
           return data.first
         end
@@ -78,10 +78,7 @@ module CheckPassenger
       last_used.split(/\s+/).inject(0) do |sum, part|
         if part =~ /^(\d+)([a-z])$/
           unless UNIT_MULTIPLIERS.has_key?($2)
-          raise StatusOutputError.new(
-              "Unknown time unit '#{$2}' in '#{last_used}'",
-              passenger_status_output
-            )
+            fail StatusOutputError.new("Unknown time unit '#{$2}' in '#{last_used}'", passenger_status_output)
           end
           sum + $1.to_i * UNIT_MULTIPLIERS[$2]
         else
@@ -95,11 +92,11 @@ module CheckPassenger
         app_data = {}
 
         app_output =~ /App root: +([^\n]+)/
-        raise StatusOutputError.new('Could not find app name', passenger_status_output) unless $1
+        fail StatusOutputError.new('Could not find app name', passenger_status_output) unless $1
         app_data[:name] = $1.strip
 
         app_output =~ /Requests in queue: *(\d+)/
-        raise StatusOutputError.new('Could not find application queued requests', passenger_status_output) unless $1
+        fail StatusOutputError.new('Could not find application queued requests', passenger_status_output) unless $1
         app_data[:request_count] = $1.strip.to_i
 
         app_data[:process_count] = app_output.scan(/PID *: *\d+/).size
@@ -114,25 +111,25 @@ module CheckPassenger
 
     def parse_passenger_status_output
       passenger_status_output =~ /^(.*?)-+ +Application groups +-+[^\n]*\n(.*)$/m
-      raise StatusOutputError.new('Did not find "Application groups" section', passenger_status_output) unless $1
+      fail StatusOutputError.new('Did not find "Application groups" section', passenger_status_output) unless $1
 
       generic_data = $1
       application_data = $2
 
       generic_data =~ /Version *: *([.\d]+)/
-      raise StatusOutputError.new('Could not find Passenger version', passenger_status_output) unless $1
+      fail StatusOutputError.new('Could not find Passenger version', passenger_status_output) unless $1
       @passenger_version = $1
 
       generic_data =~ /Max pool size *: *(\d+)/
-      raise StatusOutputError.new('Could not find max pool size', passenger_status_output) unless $1
+      fail StatusOutputError.new('Could not find max pool size', passenger_status_output) unless $1
       @max_pool_size = $1.to_i
 
       generic_data =~ /Processes *: *(\d+)/
-      raise StatusOutputError.new('Could not find process count', passenger_status_output) unless $1
+      fail StatusOutputError.new('Could not find process count', passenger_status_output) unless $1
       @process_count = $1.to_i
 
       generic_data =~ /Requests in top-level queue *: *(\d+)/
-      raise StatusOutputError.new('Could not find top-level queued requests', passenger_status_output) unless $1
+      fail StatusOutputError.new('Could not find top-level queued requests', passenger_status_output) unless $1
       @top_level_request_count = $1.to_i
 
       @application_data = parse_application_data(application_data)
