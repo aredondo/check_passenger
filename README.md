@@ -137,11 +137,7 @@ Cached data is stored in the temporary directory of the system, with a time-to-l
 
 ## Contributing
 
-1. Fork it ( https://github.com/aredondo/check_passenger/fork )
-2. Create your feature branch (`git checkout -b my-new-feature`)
-3. Commit your changes (`git commit -am 'Add some feature'`)
-4. Push to the branch (`git push origin my-new-feature`)
-5. Create a new Pull Request
+Please, see [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 
 ## License
