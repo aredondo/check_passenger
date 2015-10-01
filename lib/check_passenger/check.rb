@@ -76,10 +76,14 @@ module CheckPassenger
         end
 
         label = if COUNTER_LABELS[counter_type].is_a?(Array)
-          counter == 1 ? COUNTER_LABELS[counter_type].first : COUNTER_LABELS[counter_type].last
-        else
-          COUNTER_LABELS[counter_type]
-        end
+                  if counter == 1
+                    COUNTER_LABELS[counter_type].first
+                  else
+                    COUNTER_LABELS[counter_type].last
+                  end
+                else
+                  COUNTER_LABELS[counter_type]
+                end
 
         label % counter
       end
