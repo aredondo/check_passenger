@@ -1,8 +1,6 @@
-#!/usr/bin/env ruby
+#!/bin/bash
 
-puts DATA.read
-
-__END__
+cat <<'HEREDOC'
 Version : 4.0.46
 Date    : 2014-09-11 00:57:57 +0200
 Instance: 32028
@@ -80,3 +78,4 @@ Requests in top-level queue : 10
   * PID: 24379   Sessions: 0       Processed: 275     Uptime: 32m 7s
     CPU: 0%      Memory  : 59M     Last used: 0s ago
 
+HEREDOC

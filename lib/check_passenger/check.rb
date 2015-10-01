@@ -23,12 +23,10 @@ module CheckPassenger
         output_status = nagios_status(counter, options)
 
         data = {
-          text: 'Passenger %s %s - %s' %
-                [
-                  options[:app_name] || parsed_data.passenger_version,
-                  output_status.to_s.upcase,
-                  counter_with_label(counter, counter_name)
-                ],
+          text: format('Passenger %s %s - %s',
+                       options[:app_name] || parsed_data.passenger_version,
+                       output_status.to_s.upcase,
+                       counter_with_label(counter, counter_name)),
           counter: counter_name.to_s, value: counter,
           warn: options[:warn], crit: options[:crit],
           min: 0, max: nil
@@ -38,11 +36,11 @@ module CheckPassenger
         end
         output_data << data
 
-        if !options[:app_name] and options[:include_all]
+        if options[:include_all]
           parsed_data.application_names.each do |app_name|
             counter = parsed_data.send(counter_name.to_sym, app_name)
             output_data << {
-              text: '%s %s' % [app_name, counter_with_label(counter, counter_name)],
+              text: format('%s %s', app_name, counter_with_label(counter, counter_name)),
               counter: app_name, value: counter
             }
           end
@@ -52,7 +50,7 @@ module CheckPassenger
 
       rescue NoApplicationError => e
         status = :crit
-        return [status, 'Passenger %s %s - %s' % [e.name, status.to_s.upcase, e.to_s]]
+        return [status, format('Passenger %s %s - %s', e.name, status.to_s.upcase, e.to_s)]
       end
 
       def method_missing(method, *args)
@@ -70,39 +68,46 @@ module CheckPassenger
 
       private
 
+      def cache_file_path
+        File.expand_path('check_passenger_cache.dump', Dir.tmpdir)
+      end
+
+      def cache_parsed_data(data)
+        File.open(cache_file_path, 'wb') { |file| file.write Marshal.dump(data) }
+      end
+
       def counter_with_label(counter, counter_type)
         counter_type = counter_type.to_sym
 
         unless COUNTER_LABELS.keys.include?(counter_type)
-          raise ArgumentError, 'Unknown counter type: %s' % counter_type.to_s
+          fail ArgumentError, "Unknown counter type: #{counter_type}"
         end
 
         label = if COUNTER_LABELS[counter_type].is_a?(Array)
-          counter == 1 ? COUNTER_LABELS[counter_type].first : COUNTER_LABELS[counter_type].last
-        else
-          COUNTER_LABELS[counter_type]
-        end
+                  if counter == 1
+                    COUNTER_LABELS[counter_type].first
+                  else
+                    COUNTER_LABELS[counter_type].last
+                  end
+                else
+                  COUNTER_LABELS[counter_type]
+                end
 
         label % counter
       end
 
+      def load_cached_data
+        return nil unless File.exist?(cache_file_path) and (Time.now - File.mtime(cache_file_path) < CACHE_TTL)
+        File.open(cache_file_path, 'rb') { |file| return Marshal.load(file.read) }
+      end
+
       def load_parsed_data(options)
         @parsed_data = options[:parsed_data]
-
-        if @parsed_data.nil? and options[:cache]
-          cache_file_path = File.expand_path('check_passenger_cache.dump', Dir.tmpdir)
-
-          if File.exist?(cache_file_path) and (Time.now - File.mtime(cache_file_path) < CACHE_TTL)
-            File.open(cache_file_path, 'rb') { |file| @parsed_data = Marshal.load(file.read) }
-          end
-        end
+        @parsed_data = load_cached_data if @parsed_data.nil? and options[:cache]
 
         if @parsed_data.nil?
           @parsed_data = Parser.new(passenger_status(options[:passenger_status_path]).run)
-
-          if options[:cache]
-            File.open(cache_file_path, 'wb') { |file| file.write Marshal.dump(@parsed_data) }
-          end
+          cache_parsed_data(@parsed_data) if options[:cache]
         end
 
         @parsed_data

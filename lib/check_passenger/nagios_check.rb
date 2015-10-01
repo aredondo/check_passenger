@@ -1,6 +1,6 @@
 module CheckPassenger
   module NagiosCheck
-    EXIT_CODES = { ok: 0, warn: 1, crit: 2 }
+    EXIT_CODES = {ok: 0, warn: 1, crit: 2}
 
     private
 
@@ -21,13 +21,10 @@ module CheckPassenger
           status_text = line
         when Hash
           status_text = line[:text]
-          perf_data << '%s=%d;%s;%s;%s;%s' % [
-            line[:counter], line[:value],
-            line[:warn], line[:crit],
-            line[:min], line[:max]
-          ]
+          perf_data << format('%s=%d;%s;%s;%s;%s',
+                              line[:counter], line[:value], line[:warn], line[:crit], line[:min], line[:max])
         else
-          raise ArgumentError
+          fail ArgumentError
         end
 
         if main_status.nil?
@@ -42,13 +39,13 @@ module CheckPassenger
 
     def nagios_output(status, data)
       unless [:ok, :warn, :crit].include?(status)
-        raise ArgumentError, 'Invalid status provided: %s' % status.to_s
+        fail ArgumentError, "Invalid status provided: #{status}"
       end
 
       main_status, status_data, perf_data = nagios_format_output(data)
 
       if perf_data.is_a?(Array) and perf_data.any?
-        puts '%s|%s' % [main_status, perf_data.join(' ')]
+        puts format('%s|%s', main_status, perf_data.join(' '))
       else
         puts main_status
       end
@@ -60,17 +57,17 @@ module CheckPassenger
     def nagios_range_to_condition(nagios_range)
       case nagios_range
       when /^(-?\d+)$/
-        lambda { |n| !(0 .. $1.to_i).include?(n) }
+        ->(n) { !(0..$1.to_i).include?(n) }
       when /^(-?\d+):~?$/
-        lambda { |n| n < $1.to_i }
+        ->(n) { n < $1.to_i }
       when /^~?:(-?\d+)$/
-        lambda { |n| n > $1.to_i }
+        ->(n) { n > $1.to_i }
       when /^(-?\d+):(-?\d+)$/
-        lambda { |n| !($1.to_i .. $2.to_i).include?(n) }
+        ->(n) { !($1.to_i..$2.to_i).include?(n) }
       when /^@(-?\d+):(-?\d+)$/
-        lambda { |n| ($1.to_i .. $2.to_i).include?(n) }
+        ->(n) { ($1.to_i..$2.to_i).include?(n) }
       else
-        raise ArgumentError, 'Cannot process Nagios range: %s' % nagios_range
+        fail ArgumentError, "Cannot process Nagios range: #{nagios_range}"
       end
     end
 

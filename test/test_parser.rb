@@ -19,25 +19,25 @@ describe CheckPassenger::Parser do
     it 'correctly handles process life' do
       begin
         parser = CheckPassenger::Parser.new(@sample_output)
-      rescue Exception => e
-        assert false, 'Exception %s raised with message: %s' % [e.class.to_s, e.to_s]
+      rescue e
+        assert false, "Exception #{e.class} raised with message: #{e}"
       end
 
       last_used = '23x 4d 5h 4s'
       assert_raises CheckPassenger::StatusOutputError do
-        parser.send(:'is_process_alive?', last_used)
+        parser.send(:'process_alive?', last_used)
       end
 
       last_used = '4d 5h 4s'
 
       begin
         life_in_seconds = parser.send(:life_to_seconds, last_used)
-      rescue Exception => e
-        assert false, 'Exception %s raised with message: %s' % [e.class.to_s, e.to_s]
+      rescue e
+        assert false, "Exception #{e.class} raised with message: #{e}"
       end
       assert_equal 363_604, life_in_seconds
 
-      refute parser.send(:'is_process_alive?', last_used)
+      refute parser.send(:'process_alive?', last_used)
     end
 
     it 'correctly parses max pool size' do
