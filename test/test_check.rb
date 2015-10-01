@@ -5,7 +5,7 @@ describe CheckPassenger::Check do
     it 'returns a PassengerStatus class' do
       assert_equal 'CheckPassenger::PassengerStatus', CheckPassenger::Check.send(:passenger_status).name
       assert_equal 'CheckPassenger::PassengerStatus',
-          CheckPassenger::Check.send(:passenger_status, File.dirname(__FILE__)).name
+                   CheckPassenger::Check.send(:passenger_status, File.dirname(__FILE__)).name
     end
   end
 
