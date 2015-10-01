@@ -102,7 +102,7 @@ class CheckPassengerCLI < Thor
 
   rescue StandardError => e
     if options[:debug] or options[:dump]
-      if dump_path = dump_passenger_status_output(e)
+      if (dump_path = dump_passenger_status_output(e))
         message = e.message + " -- passenger-status output dumped to #{dump_path}"
         e = e.class.new(message)
       end
