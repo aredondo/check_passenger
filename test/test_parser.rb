@@ -25,7 +25,7 @@ describe CheckPassenger::Parser do
 
       last_used = '23x 4d 5h 4s'
       assert_raises CheckPassenger::StatusOutputError do
-        parser.send(:'is_process_alive?', last_used)
+        parser.send(:'process_alive?', last_used)
       end
 
       last_used = '4d 5h 4s'
@@ -37,7 +37,7 @@ describe CheckPassenger::Parser do
       end
       assert_equal 363_604, life_in_seconds
 
-      refute parser.send(:'is_process_alive?', last_used)
+      refute parser.send(:'process_alive?', last_used)
     end
 
     it 'correctly parses max pool size' do

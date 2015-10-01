@@ -70,7 +70,7 @@ module CheckPassenger
       end
     end
 
-    def is_process_alive?(last_used)
+    def process_alive?(last_used)
       life_to_seconds(last_used) < LIVE_PROCESS_TTL_IN_SECONDS
     end
 
@@ -102,7 +102,7 @@ module CheckPassenger
         app_data[:process_count] = app_output.scan(/PID *: *\d+/).size
         app_data[:memory] = app_output.scan(/Memory *: *(\d+)M/).reduce(0.0) { |a, e| a + e[0].to_f }
         app_data[:live_process_count] = (
-          app_output.scan(/Last used *: *([^\n]+)/).select { |m| is_process_alive?(m[0]) }
+          app_output.scan(/Last used *: *([^\n]+)/).select { |m| process_alive?(m[0]) }
         ).size
 
         app_data
