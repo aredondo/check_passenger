@@ -141,13 +141,13 @@ describe CheckPassenger::Check do
 
       it 'sets a warn alert when value over threshold' do
         options = {parsed_data: @parsed_data, app_name: 'application_4', warn: '150', crit: '300'}
-        output_status, output_data = CheckPassenger::Check.memory(options)
+        output_status, _output_data = CheckPassenger::Check.memory(options)
         assert_equal :warn, output_status
       end
 
       it 'sets a crit alert when value over threshold' do
         options = {parsed_data: @parsed_data, app_name: 'application_4', warn: '75', crit: '150'}
-        output_status, output_data = CheckPassenger::Check.memory(options)
+        output_status, _output_data = CheckPassenger::Check.memory(options)
         assert_equal :crit, output_status
       end
     end
@@ -162,37 +162,37 @@ describe CheckPassenger::Check do
 
     it 'correctly uses singular/plural when reporting counts' do
       options = {parsed_data: @parsed_data}
-      output_status, output_data = CheckPassenger::Check.process_count(options)
+      _output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b6 processes\b/, output_data.first[:text]
-      output_status, output_data = CheckPassenger::Check.live_process_count(options)
+      _output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b1 live process\b/, output_data.first[:text]
-      output_status, output_data = CheckPassenger::Check.request_count(options)
+      _output_status, output_data = CheckPassenger::Check.request_count(options)
       assert output_data.first[:text] =~ /\b79 requests\b/, output_data.first[:text]
-      output_status, output_data = CheckPassenger::Check.top_level_request_count(options)
+      _output_status, output_data = CheckPassenger::Check.top_level_request_count(options)
       assert output_data.first[:text] =~ /\b13 top-level requests\b/, output_data.first[:text]
 
       options = {parsed_data: @parsed_data, app_name: 'application_1'}
-      output_status, output_data = CheckPassenger::Check.process_count(options)
+      _output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b1 process\b/, output_data.first[:text]
-      output_status, output_data = CheckPassenger::Check.live_process_count(options)
+      _output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b1 live process\b/, output_data.first[:text]
-      output_status, output_data = CheckPassenger::Check.request_count(options)
+      _output_status, output_data = CheckPassenger::Check.request_count(options)
       assert output_data.first[:text] =~ /\b1 request\b/, output_data.first[:text]
 
       options = {parsed_data: @parsed_data, app_name: 'application_2'}
-      output_status, output_data = CheckPassenger::Check.process_count(options)
+      _output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b1 process\b/, output_data.first[:text]
-      output_status, output_data = CheckPassenger::Check.live_process_count(options)
+      _output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b0 live processes\b/, output_data.first[:text]
-      output_status, output_data = CheckPassenger::Check.request_count(options)
+      _output_status, output_data = CheckPassenger::Check.request_count(options)
       assert output_data.first[:text] =~ /\b32 requests\b/, output_data.first[:text]
 
       options = {parsed_data: @parsed_data, app_name: 'application_3'}
-      output_status, output_data = CheckPassenger::Check.process_count(options)
+      _output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b4 processes\b/, output_data.first[:text]
-      output_status, output_data = CheckPassenger::Check.live_process_count(options)
+      _output_status, output_data = CheckPassenger::Check.live_process_count(options)
       assert output_data.first[:text] =~ /\b0 live processes\b/, output_data.first[:text]
-      output_status, output_data = CheckPassenger::Check.request_count(options)
+      _output_status, output_data = CheckPassenger::Check.request_count(options)
       assert output_data.first[:text] =~ /\b33 requests\b/, output_data.first[:text]
     end
 

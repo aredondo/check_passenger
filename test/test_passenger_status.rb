@@ -16,7 +16,7 @@ describe CheckPassenger::PassengerStatus do
   it 'can find the executable in a directory' do
     CheckPassenger::PassengerStatus.path = File.dirname(__FILE__)
     begin
-      output = CheckPassenger::PassengerStatus.run
+      CheckPassenger::PassengerStatus.run
     rescue Exception => e
       assert false, e.to_s
     end
