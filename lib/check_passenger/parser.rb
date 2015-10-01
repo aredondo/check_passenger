@@ -18,7 +18,7 @@ module CheckPassenger
         app_data = application_data(app_name)
         app_data[:live_process_count]
       else
-        @application_data.inject(0) { |sum, e| sum + e[:live_process_count] }
+        @application_data.reduce(0) { |sum, e| sum + e[:live_process_count] }
       end
     end
 
@@ -27,7 +27,7 @@ module CheckPassenger
         app_data = application_data(app_name)
         app_data[:memory]
       else
-        @application_data.inject(0) { |sum, e| sum + e[:memory] }
+        @application_data.reduce(0) { |sum, e| sum + e[:memory] }
       end
     end
 
@@ -45,7 +45,7 @@ module CheckPassenger
         app_data = application_data(app_name)
         app_data[:request_count]
       else
-        @application_data.inject(@top_level_request_count) { |sum, e| sum + e[:request_count] }
+        @application_data.reduce(@top_level_request_count) { |sum, e| sum + e[:request_count] }
       end
     end
 
@@ -75,7 +75,7 @@ module CheckPassenger
     end
 
     def life_to_seconds(last_used)
-      last_used.split(/\s+/).inject(0) do |sum, part|
+      last_used.split(/\s+/).reduce(0) do |sum, part|
         if part =~ /^(\d+)([a-z])$/
           unless UNIT_MULTIPLIERS.key?($2)
             fail StatusOutputError.new("Unknown time unit '#{$2}' in '#{last_used}'", passenger_status_output)
@@ -100,7 +100,7 @@ module CheckPassenger
         app_data[:request_count] = $1.strip.to_i
 
         app_data[:process_count] = app_output.scan(/PID *: *\d+/).size
-        app_data[:memory] = app_output.scan(/Memory *: *(\d+)M/).inject(0.0) { |s, m| s + m[0].to_f }
+        app_data[:memory] = app_output.scan(/Memory *: *(\d+)M/).reduce(0.0) { |s, m| s + m[0].to_f }
         app_data[:live_process_count] = (
           app_output.scan(/Last used *: *([^\n]+)/).select { |m| is_process_alive?(m[0]) }
         ).size
