@@ -1,6 +1,6 @@
 # Changelog
 
-## `Develop`
+## 1.1.0
 
 - Add checks for application queues and top-level queue sizes
 - Improve documentation
