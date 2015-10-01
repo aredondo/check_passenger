@@ -10,10 +10,10 @@ describe CheckPassenger::NagiosCheck do
   describe '#nagios_status' do
     it 'returns the correct status' do
       assert_equal :ok, @obj.send(:nagios_status, 2)
-      assert_equal :ok, @obj.send(:nagios_status, 2, { warn: '3' })
-      assert_equal :warn, @obj.send(:nagios_status, 6, { warn: '5' })
-      assert_equal :warn, @obj.send(:nagios_status, -1, { warn: '5' })
-      assert_equal :crit, @obj.send(:nagios_status, 6, { warn: '5', crit: '5' })
+      assert_equal :ok, @obj.send(:nagios_status, 2, {warn: '3'})
+      assert_equal :warn, @obj.send(:nagios_status, 6, {warn: '5'})
+      assert_equal :warn, @obj.send(:nagios_status, -1, {warn: '5'})
+      assert_equal :crit, @obj.send(:nagios_status, 6, {warn: '5', crit: '5'})
     end
   end
 

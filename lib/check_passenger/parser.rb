@@ -1,6 +1,6 @@
 module CheckPassenger
   class Parser
-    UNIT_MULTIPLIERS = { 's' => 1, 'm' => 60, 'h' => 3_600, 'd' => 86_400 }
+    UNIT_MULTIPLIERS = {'s' => 1, 'm' => 60, 'h' => 3_600, 'd' => 86_400}
 
     attr_reader :max_pool_size, :passenger_status_output, :passenger_version
 

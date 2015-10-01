@@ -29,7 +29,7 @@ describe CheckPassenger::Check do
 
     describe '#process_count' do
       it 'reports global process count' do
-        options = { parsed_data: @parsed_data }
+        options = {parsed_data: @parsed_data}
         output_status, output_data = CheckPassenger::Check.process_count(options)
 
         assert_equal :ok, output_status
@@ -40,7 +40,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports global memory' do
-        options = { parsed_data: @parsed_data }
+        options = {parsed_data: @parsed_data}
         output_status, output_data = CheckPassenger::Check.memory(options)
 
         assert :ok, output_status
@@ -51,7 +51,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports data for all applications' do
-        options = { parsed_data: @parsed_data, include_all: true }
+        options = {parsed_data: @parsed_data, include_all: true}
         [:process_count, :memory, :live_process_count].each do |counter|
           output_status, output_data = CheckPassenger::Check.send(counter, options)
 
@@ -63,7 +63,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports global live process count' do
-        options = { parsed_data: @parsed_data }
+        options = {parsed_data: @parsed_data}
         output_status, output_data = CheckPassenger::Check.live_process_count(options)
 
         assert :ok, output_status
@@ -74,7 +74,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports global request queue' do
-        options = { parsed_data: @parsed_data }
+        options = {parsed_data: @parsed_data}
         output_status, output_data = CheckPassenger::Check.request_count(options)
 
         assert :ok, output_status
@@ -85,7 +85,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports top-level queue size' do
-        options = { parsed_data: @parsed_data }
+        options = {parsed_data: @parsed_data}
         output_status, output_data = CheckPassenger::Check.top_level_request_count(options)
 
         assert :ok, output_status
@@ -96,7 +96,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports application process count' do
-        options = { parsed_data: @parsed_data, app_name: 'application_1' }
+        options = {parsed_data: @parsed_data, app_name: 'application_1'}
         output_status, output_data = CheckPassenger::Check.process_count(options)
 
         assert_equal :ok, output_status
@@ -107,7 +107,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports application memory' do
-        options = { parsed_data: @parsed_data, app_name: 'application_2' }
+        options = {parsed_data: @parsed_data, app_name: 'application_2'}
         output_status, output_data = CheckPassenger::Check.memory(options)
 
         assert_equal :ok, output_status
@@ -118,7 +118,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports application live process count' do
-        options = { parsed_data: @parsed_data, app_name: 'application_3' }
+        options = {parsed_data: @parsed_data, app_name: 'application_3'}
         output_status, output_data = CheckPassenger::Check.live_process_count(options)
 
         assert_equal :ok, output_status
@@ -129,7 +129,7 @@ describe CheckPassenger::Check do
       end
 
       it 'reports application request queue count' do
-        options = { parsed_data: @parsed_data, app_name: 'application_4' }
+        options = {parsed_data: @parsed_data, app_name: 'application_4'}
         output_status, output_data = CheckPassenger::Check.request_count(options)
 
         assert_equal :ok, output_status
@@ -140,13 +140,13 @@ describe CheckPassenger::Check do
       end
 
       it 'sets a warn alert when value over threshold' do
-        options = { parsed_data: @parsed_data, app_name: 'application_4', warn: '150', crit: '300' }
+        options = {parsed_data: @parsed_data, app_name: 'application_4', warn: '150', crit: '300'}
         output_status, output_data = CheckPassenger::Check.memory(options)
         assert_equal :warn, output_status
       end
 
       it 'sets a crit alert when value over threshold' do
-        options = { parsed_data: @parsed_data, app_name: 'application_4', warn: '75', crit: '150' }
+        options = {parsed_data: @parsed_data, app_name: 'application_4', warn: '75', crit: '150'}
         output_status, output_data = CheckPassenger::Check.memory(options)
         assert_equal :crit, output_status
       end
@@ -161,7 +161,7 @@ describe CheckPassenger::Check do
     end
 
     it 'correctly uses singular/plural when reporting counts' do
-      options = { parsed_data: @parsed_data }
+      options = {parsed_data: @parsed_data}
       output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b6 processes\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
@@ -171,7 +171,7 @@ describe CheckPassenger::Check do
       output_status, output_data = CheckPassenger::Check.top_level_request_count(options)
       assert output_data.first[:text] =~ /\b13 top-level requests\b/, output_data.first[:text]
 
-      options = { parsed_data: @parsed_data, app_name: 'application_1' }
+      options = {parsed_data: @parsed_data, app_name: 'application_1'}
       output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b1 process\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
@@ -179,7 +179,7 @@ describe CheckPassenger::Check do
       output_status, output_data = CheckPassenger::Check.request_count(options)
       assert output_data.first[:text] =~ /\b1 request\b/, output_data.first[:text]
 
-      options = { parsed_data: @parsed_data, app_name: 'application_2' }
+      options = {parsed_data: @parsed_data, app_name: 'application_2'}
       output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b1 process\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
@@ -187,7 +187,7 @@ describe CheckPassenger::Check do
       output_status, output_data = CheckPassenger::Check.request_count(options)
       assert output_data.first[:text] =~ /\b32 requests\b/, output_data.first[:text]
 
-      options = { parsed_data: @parsed_data, app_name: 'application_3' }
+      options = {parsed_data: @parsed_data, app_name: 'application_3'}
       output_status, output_data = CheckPassenger::Check.process_count(options)
       assert output_data.first[:text] =~ /\b4 processes\b/, output_data.first[:text]
       output_status, output_data = CheckPassenger::Check.live_process_count(options)
@@ -197,7 +197,7 @@ describe CheckPassenger::Check do
     end
 
     it 'raises an alert if the application is not running' do
-      options = { parsed_data: @parsed_data, app_name: 'application_4' }
+      options = {parsed_data: @parsed_data, app_name: 'application_4'}
       output_status, output_data = CheckPassenger::Check.process_count(options)
       assert_equal :crit, output_status, output_data.inspect
     end

@@ -1,6 +1,6 @@
 module CheckPassenger
   module NagiosCheck
-    EXIT_CODES = { ok: 0, warn: 1, crit: 2 }
+    EXIT_CODES = {ok: 0, warn: 1, crit: 2}
 
     private
 
