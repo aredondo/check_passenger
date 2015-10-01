@@ -1,5 +1,10 @@
 # check_passenger
 
+[![Gem Version](https://badge.fury.io/rb/check_passenger.svg)](http://badge.fury.io/rb/check_passenger)
+[![Build Status](https://travis-ci.org/aredondo/check_passenger.svg?branch=master)](https://travis-ci.org/aredondo/check_passenger)
+[![Code Climate](https://codeclimate.com/github/aredondo/check_passenger/badges/gpa.svg)](https://codeclimate.com/github/aredondo/check_passenger)
+[![License](http://img.shields.io/:license-mit-blue.svg)](http://aredondo.mit-license.org)
+
 This gem provides a Nagios check command to monitor running Passenger processes and the memory that they use.
 
 It can report data on a global or per-application basis, and raise warnings and alerts when consumption exceeds given thresholds.
