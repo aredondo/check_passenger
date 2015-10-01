@@ -14,9 +14,9 @@ describe CheckPassenger::Check do
 
     output_data.each do |datum|
       assert_kind_of Hash, datum
-      assert datum.has_key?(:text)
-      assert datum.has_key?(:counter)
-      assert datum.has_key?(:value)
+      assert datum.key?(:text)
+      assert datum.key?(:counter)
+      assert datum.key?(:value)
     end
   end
 

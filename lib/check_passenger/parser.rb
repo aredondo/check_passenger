@@ -77,7 +77,7 @@ module CheckPassenger
     def life_to_seconds(last_used)
       last_used.split(/\s+/).inject(0) do |sum, part|
         if part =~ /^(\d+)([a-z])$/
-          unless UNIT_MULTIPLIERS.has_key?($2)
+          unless UNIT_MULTIPLIERS.key?($2)
             fail StatusOutputError.new("Unknown time unit '#{$2}' in '#{last_used}'", passenger_status_output)
           end
           sum + $1.to_i * UNIT_MULTIPLIERS[$2]
