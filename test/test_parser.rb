@@ -20,7 +20,7 @@ describe CheckPassenger::Parser do
       begin
         parser = CheckPassenger::Parser.new(@sample_output)
       rescue Exception => e
-        assert false, 'Exception %s raised with message: %s' % [e.class.to_s, e.to_s]
+        assert false, "Exception #{e.class} raised with message: #{e}"
       end
 
       last_used = '23x 4d 5h 4s'
@@ -33,7 +33,7 @@ describe CheckPassenger::Parser do
       begin
         life_in_seconds = parser.send(:life_to_seconds, last_used)
       rescue Exception => e
-        assert false, 'Exception %s raised with message: %s' % [e.class.to_s, e.to_s]
+        assert false, "Exception #{e.class} raised with message: #{e}"
       end
       assert_equal 363_604, life_in_seconds
 

@@ -23,12 +23,10 @@ module CheckPassenger
         output_status = nagios_status(counter, options)
 
         data = {
-          text: 'Passenger %s %s - %s' %
-                [
-                  options[:app_name] || parsed_data.passenger_version,
-                  output_status.to_s.upcase,
-                  counter_with_label(counter, counter_name)
-                ],
+          text: format('Passenger %s %s - %s',
+                       options[:app_name] || parsed_data.passenger_version,
+                       output_status.to_s.upcase,
+                       counter_with_label(counter, counter_name)),
           counter: counter_name.to_s, value: counter,
           warn: options[:warn], crit: options[:crit],
           min: 0, max: nil
@@ -42,7 +40,7 @@ module CheckPassenger
           parsed_data.application_names.each do |app_name|
             counter = parsed_data.send(counter_name.to_sym, app_name)
             output_data << {
-              text: '%s %s' % [app_name, counter_with_label(counter, counter_name)],
+              text: format('%s %s', app_name, counter_with_label(counter, counter_name)),
               counter: app_name, value: counter
             }
           end
@@ -52,7 +50,7 @@ module CheckPassenger
 
       rescue NoApplicationError => e
         status = :crit
-        return [status, 'Passenger %s %s - %s' % [e.name, status.to_s.upcase, e.to_s]]
+        return [status, format('Passenger %s %s - %s', e.name, status.to_s.upcase, e.to_s)]
       end
 
       def method_missing(method, *args)
@@ -74,7 +72,7 @@ module CheckPassenger
         counter_type = counter_type.to_sym
 
         unless COUNTER_LABELS.keys.include?(counter_type)
-          raise ArgumentError, 'Unknown counter type: %s' % counter_type.to_s
+          raise ArgumentError, "Unknown counter type: #{counter_type}"
         end
 
         label = if COUNTER_LABELS[counter_type].is_a?(Array)

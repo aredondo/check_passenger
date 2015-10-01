@@ -87,7 +87,7 @@ class CheckPassengerCLI < Thor
     end
 
     if passenger_status_output
-      filename = 'passenger_status_output_dump-%s.txt' % Time.now.strftime('%Y%m%d%H%M%S')
+      filename = format('passenger_status_output_dump-%s.txt', Time.now.strftime('%Y%m%d%H%M%S'))
       dump_path = File.expand_path(filename, Dir.tmpdir)
       File.open(dump_path, 'wb') { |file| file.write passenger_status_output }
       return dump_path
@@ -107,7 +107,7 @@ class CheckPassengerCLI < Thor
   rescue StandardError => e
     if options[:debug] or options[:dump]
       if dump_path = dump_passenger_status_output(e)
-        message = e.message + ' -- passenger-status output dumped to %s' % dump_path
+        message = e.message + " -- passenger-status output dumped to #{dump_path}"
         e = e.class.new(message)
       end
     end
@@ -117,9 +117,9 @@ class CheckPassengerCLI < Thor
     else
       case e
       when CheckPassenger::StatusOutputError
-        nagios_error('Passenger UNKNOWN - An error occurred while parsing passenger-status output: %s' % e.message)
+        nagios_error("Passenger UNKNOWN - An error occurred while parsing passenger-status output: #{e.message}")
       else
-        nagios_error('Passenger UNKNOWN - %s (%s)' % [e.message, e.class.to_s])
+        nagios_error("Passenger UNKNOWN - #{e.message} (#{e.class})")
       end
     end
   end

@@ -61,7 +61,7 @@ module CheckPassenger
         if data.size == 0
           raise NoApplicationError.new('Application is not running', app_name)
         elsif data.size > 1
-          raise MultipleApplicationsError.new('More than one running application match "%s"' % app_name, app_name)
+          raise MultipleApplicationsError.new("More than one running application match '#{app_name}'", app_name)
         else
           return data.first
         end
@@ -79,7 +79,7 @@ module CheckPassenger
         if part =~ /^(\d+)([a-z])$/
           unless UNIT_MULTIPLIERS.has_key?($2)
           raise StatusOutputError.new(
-              'Unknown time unit "%s" in "%s"' % [$2, last_used],
+              "Unknown time unit '#{$2}' in '#{last_used}'",
               passenger_status_output
             )
           end
