@@ -17,7 +17,7 @@ describe CheckPassenger::PassengerStatus do
     CheckPassenger::PassengerStatus.path = File.dirname(__FILE__)
     begin
       CheckPassenger::PassengerStatus.run
-    rescue Exception => e
+    rescue e
       assert false, e.to_s
     end
   end

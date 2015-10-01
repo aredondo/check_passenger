@@ -19,7 +19,7 @@ describe CheckPassenger::Parser do
     it 'correctly handles process life' do
       begin
         parser = CheckPassenger::Parser.new(@sample_output)
-      rescue Exception => e
+      rescue e
         assert false, "Exception #{e.class} raised with message: #{e}"
       end
 
@@ -32,7 +32,7 @@ describe CheckPassenger::Parser do
 
       begin
         life_in_seconds = parser.send(:life_to_seconds, last_used)
-      rescue Exception => e
+      rescue e
         assert false, "Exception #{e.class} raised with message: #{e}"
       end
       assert_equal 363_604, life_in_seconds
