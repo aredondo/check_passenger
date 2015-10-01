@@ -11,15 +11,14 @@ class CheckPassengerCLI < Thor
   include CheckPassenger::NagiosCheck
 
   class_option :cache, aliases: 'C', type: :boolean,
-                banner: 'Cache data to avoid fast successive calls to passenger-status'
+                       banner: 'Cache data to avoid fast successive calls to passenger-status'
   class_option :debug, aliases: 'D', type: :boolean, banner: 'Debug mode'
   class_option :dump, aliases: 'd', type: :boolean, banner: 'Dump passenger-status output on error'
   class_option :passenger_status_path, aliases: 'p', banner: 'Path to passenger-status command'
 
   desc 'memory', 'Check memory used by Passenger processes'
   option :app_name, aliases: 'n', banner: 'Limit check to application with APP_NAME'
-  option :include_all, aliases: 'a', type: :boolean,
-          banner: 'Also include counter for all running apps'
+  option :include_all, aliases: 'a', type: :boolean, banner: 'Also include counter for all running apps'
   option :warn, banner: 'Memory usage threshold to raise warning status', aliases: 'w'
   option :crit, banner: 'Memory usage threshold to raise critical status', aliases: 'c'
   def memory
@@ -30,8 +29,7 @@ class CheckPassengerCLI < Thor
 
   desc 'processes', 'Check running Passenger processes'
   option :app_name, aliases: 'n', banner: 'Limit check to application with APP_NAME'
-  option :include_all, aliases: 'a', type: :boolean,
-          banner: 'Also include counter for all running apps'
+  option :include_all, aliases: 'a', type: :boolean, banner: 'Also include counter for all running apps'
   option :warn, aliases: 'w', banner: 'Process count threshold to raise warning status'
   option :crit, aliases: 'c', banner: 'Process count threshold to raise critical status'
   def processes
@@ -42,8 +40,7 @@ class CheckPassengerCLI < Thor
 
   desc 'live_processes', 'Check live Passenger processes'
   option :app_name, aliases: 'n', banner: 'Limit check to application with APP_NAME'
-  option :include_all, aliases: 'a', type: :boolean,
-          banner: 'Also include counter for all running apps'
+  option :include_all, aliases: 'a', type: :boolean, banner: 'Also include counter for all running apps'
   option :warn, aliases: 'w', banner: 'Live process count threshold to raise warning status'
   option :crit, aliases: 'c', banner: 'Live process count threshold to raise critical status'
   def live_processes
@@ -54,8 +51,7 @@ class CheckPassengerCLI < Thor
 
   desc 'requests', 'Check queued Passenger requests'
   option :app_name, aliases: 'n', banner: 'Limit check to application with APP_NAME'
-  option :include_all, aliases: 'a', type: :boolean,
-          banner: 'Also include counter for all running apps'
+  option :include_all, aliases: 'a', type: :boolean, banner: 'Also include counter for all running apps'
   option :warn, aliases: 'w', banner: 'Request count threshold to raise warning status'
   option :crit, aliases: 'c', banner: 'Request count threshold to raise critical status'
   def requests
