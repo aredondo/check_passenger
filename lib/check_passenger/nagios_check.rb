@@ -57,15 +57,15 @@ module CheckPassenger
     def nagios_range_to_condition(nagios_range)
       case nagios_range
       when /^(-?\d+)$/
-        lambda { |n| !(0 .. $1.to_i).include?(n) }
+        lambda { |n| !(0..$1.to_i).include?(n) }
       when /^(-?\d+):~?$/
         lambda { |n| n < $1.to_i }
       when /^~?:(-?\d+)$/
         lambda { |n| n > $1.to_i }
       when /^(-?\d+):(-?\d+)$/
-        lambda { |n| !($1.to_i .. $2.to_i).include?(n) }
+        lambda { |n| !($1.to_i..$2.to_i).include?(n) }
       when /^@(-?\d+):(-?\d+)$/
-        lambda { |n| ($1.to_i .. $2.to_i).include?(n) }
+        lambda { |n| ($1.to_i..$2.to_i).include?(n) }
       else
         fail ArgumentError, "Cannot process Nagios range: #{nagios_range}"
       end
